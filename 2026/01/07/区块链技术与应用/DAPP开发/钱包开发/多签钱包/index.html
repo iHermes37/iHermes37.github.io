@@ -1,0 +1,957 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Ling">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="多签钱包实现方案全面解析多签钱包主要有三大技术路径，各有特点，适用于不同场景。 一、三大技术路径概览   类型 核心技术 典型实现 优点 缺点    1. 原生多签 区块链原生支持 Bitcoin P2SH, Ethereum 多签合约 链上透明，无需信任 Gas费高，部署复杂   2. 聚合签名 密码学签名聚合 Schnorr, BLS 节省空间，隐私性好 实现复杂，较新   3. MPC门限签">
+<meta property="og:type" content="article">
+<meta property="og:title" content="多签钱包">
+<meta property="og:url" content="http://example.com/2026/01/07/%E5%8C%BA%E5%9D%97%E9%93%BE%E6%8A%80%E6%9C%AF%E4%B8%8E%E5%BA%94%E7%94%A8/DAPP%E5%BC%80%E5%8F%91/%E9%92%B1%E5%8C%85%E5%BC%80%E5%8F%91/%E5%A4%9A%E7%AD%BE%E9%92%B1%E5%8C%85/index.html">
+<meta property="og:site_name" content="The Peak Tower">
+<meta property="og:description" content="多签钱包实现方案全面解析多签钱包主要有三大技术路径，各有特点，适用于不同场景。 一、三大技术路径概览   类型 核心技术 典型实现 优点 缺点    1. 原生多签 区块链原生支持 Bitcoin P2SH, Ethereum 多签合约 链上透明，无需信任 Gas费高，部署复杂   2. 聚合签名 密码学签名聚合 Schnorr, BLS 节省空间，隐私性好 实现复杂，较新   3. MPC门限签">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-01-07T06:58:24.006Z">
+<meta property="article:modified_time" content="2026-01-07T08:20:30.347Z">
+<meta property="article:author" content="Ling">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>多签钱包 - The Peak Tower</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":"ture","follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"7a4M5yfyGptX0OG18qvJppXQ-gzGzoHsz","app_key":"y6dZFtA8I8Lg1KVhHbujblfB","server_url":"https://7a4m5yfy.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="多签钱包"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          21 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">多签钱包</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="多签钱包实现方案全面解析"><a href="#多签钱包实现方案全面解析" class="headerlink" title="多签钱包实现方案全面解析"></a><strong>多签钱包实现方案全面解析</strong></h1><p>多签钱包主要有<strong>三大技术路径</strong>，各有特点，适用于不同场景。</p>
+<h2 id="一、三大技术路径概览"><a href="#一、三大技术路径概览" class="headerlink" title="一、三大技术路径概览"></a><strong>一、三大技术路径概览</strong></h2><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>核心技术</th>
+<th>典型实现</th>
+<th>优点</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>1. 原生多签</strong></td>
+<td>区块链原生支持</td>
+<td>Bitcoin P2SH, Ethereum 多签合约</td>
+<td>链上透明，无需信任</td>
+<td>Gas费高，部署复杂</td>
+</tr>
+<tr>
+<td><strong>2. 聚合签名</strong></td>
+<td>密码学签名聚合</td>
+<td>Schnorr, BLS</td>
+<td>节省空间，隐私性好</td>
+<td>实现复杂，较新</td>
+</tr>
+<tr>
+<td><strong>3. MPC门限签名</strong></td>
+<td>安全多方计算</td>
+<td>GG18&#x2F;20, FROST</td>
+<td>无需链上合约，隐私最优</td>
+<td>技术门槛高，依赖协调</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="二、具体实现方案详解"><a href="#二、具体实现方案详解" class="headerlink" title="二、具体实现方案详解"></a><strong>二、具体实现方案详解</strong></h2><h3 id="方案1：原生多签合约（最传统）"><a href="#方案1：原生多签合约（最传统）" class="headerlink" title="方案1：原生多签合约（最传统）"></a><strong>方案1：原生多签合约（最传统）</strong></h3><h4 id="A-以太坊智能合约多签"><a href="#A-以太坊智能合约多签" class="headerlink" title="A. 以太坊智能合约多签"></a><strong>A. 以太坊智能合约多签</strong></h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// 经典Gnosis Safe多签合约核心逻辑<br>contract MultiSigWallet &#123;<br>    address[] public owners;<br>    uint256 public required;<br>    <br>    struct Transaction &#123;<br>        address to;<br>        uint256 value;<br>        bytes data;<br>        bool executed;<br>        uint256 confirmations;<br>    &#125;<br>    <br>    mapping(uint256 =&gt; Transaction) public transactions;<br>    mapping(uint256 =&gt; mapping(address =&gt; bool)) public confirmations;<br>    <br>    // 需要M-of-N签名<br>    function submitTransaction(<br>        address to, <br>        uint256 value, <br>        bytes memory data<br>    ) public returns (uint256) &#123;<br>        // 创建交易<br>    &#125;<br>    <br>    function confirmTransaction(uint256 txId) public &#123;<br>        require(isOwner[msg.sender], &quot;不是所有者&quot;);<br>        confirmations[txId][msg.sender] = true;<br>        transactions[txId].confirmations++;<br>        <br>        // 达到阈值后自动执行<br>        if (transactions[txId].confirmations &gt;= required) &#123;<br>            executeTransaction(txId);<br>        &#125;<br>    &#125;<br>    <br>    // 使用示例：3人管理，需要2人同意<br>    // 部署：owners = [Alice, Bob, Carol], required = 2<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><strong>实现项目</strong>：</p>
+<ul>
+<li><strong>Gnosis Safe</strong>：最流行的企业级多签</li>
+<li><strong>Argent Guardians</strong>：社交恢复钱包</li>
+<li><strong>OpenZeppelin Multisig</strong>：标准库实现</li>
+</ul>
+<p><strong>特点</strong>：</p>
+<ul>
+<li>✅ 完全链上，透明可审计</li>
+<li>✅ 支持任意复杂的审批逻辑</li>
+<li>❌ Gas费高（每次确认和执行都要费用）</li>
+<li>❌ 链上公开所有签名者</li>
+</ul>
+<h4 id="B-比特币P2SH-MultiSig"><a href="#B-比特币P2SH-MultiSig" class="headerlink" title="B. 比特币P2SH&#x2F;MultiSig"></a><strong>B. 比特币P2SH&#x2F;MultiSig</strong></h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 比特币2-of-3多签地址生成</span><br><span class="hljs-keyword">import</span> bit<br><br><span class="hljs-comment"># 三个私钥</span><br>private_keys = [<br>    <span class="hljs-string">&#x27;KxR8H1fX...&#x27;</span>,  <span class="hljs-comment"># 私钥1</span><br>    <span class="hljs-string">&#x27;KyVv6T8p...&#x27;</span>,  <span class="hljs-comment"># 私钥2  </span><br>    <span class="hljs-string">&#x27;L3s9R2qW...&#x27;</span>   <span class="hljs-comment"># 私钥3</span><br>]<br><br><span class="hljs-comment"># 创建2-of-3多签脚本</span><br>redeem_script = bit.multisig(<br>    [bit.PrivateKey(k).public_key <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> private_keys], <br>    <span class="hljs-number">2</span>, <span class="hljs-number">3</span>  <span class="hljs-comment"># 2-of-3</span><br>)<br><br><span class="hljs-comment"># 生成P2SH地址</span><br>multisig_address = bit.script_to_address(redeem_script)<br><span class="hljs-comment"># 地址以&quot;3&quot;开头，如：3D2oetdNuZUqQHPJmcMDDHYoqkyNVsFk9r</span><br><br><span class="hljs-comment"># 花费时需要至少2个签名</span><br>transaction = bit.Transaction(<br>    inputs=[...],<br>    outputs=[...],<br>    redeem_script=redeem_script<br>)<br>transaction.sign(private_keys[<span class="hljs-number">0</span>])  <span class="hljs-comment"># 第一个签名</span><br>transaction.sign(private_keys[<span class="hljs-number">1</span>])  <span class="hljs-comment"># 第二个签名</span><br><span class="hljs-comment"># 现在可以广播交易了</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>类型</strong>：</p>
+<ul>
+<li>**P2SH (Pay-to-Script-Hash)**：传统方式，脚本哈希上链</li>
+<li>**P2WSH (SegWit版本)**：更便宜，更高效</li>
+<li><strong>Taproot多签</strong>：最新，隐私性更好</li>
+</ul>
+<hr>
+<h3 id="方案2：聚合签名（现代方案）"><a href="#方案2：聚合签名（现代方案）" class="headerlink" title="方案2：聚合签名（现代方案）"></a><strong>方案2：聚合签名（现代方案）</strong></h3><h4 id="A-Schnorr聚合签名（比特币Taproot）"><a href="#A-Schnorr聚合签名（比特币Taproot）" class="headerlink" title="A. Schnorr聚合签名（比特币Taproot）"></a><strong>A. Schnorr聚合签名（比特币Taproot）</strong></h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># Schnorr多重签名（MuSig协议）</span><br><span class="hljs-keyword">from</span> secp256k1 <span class="hljs-keyword">import</span> PrivateKey, PublicKey<br><span class="hljs-keyword">import</span> hashlib<br><br><span class="hljs-comment"># 三个签名者准备签名同一消息</span><br>privkeys = [PrivateKey(), PrivateKey(), PrivateKey()]<br>pubkeys = [p.pubkey <span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> privkeys]<br><br><span class="hljs-comment"># 1. 聚合公钥（看起来像单签公钥）</span><br><span class="hljs-comment"># L = H(pubkey1 || pubkey2 || pubkey3)</span><br><span class="hljs-comment"># 聚合公钥 = (pubkey1*H(L||pubkey1) + pubkey2*H(L||pubkey2) + ...)</span><br>aggregated_pubkey = aggregate_public_keys(pubkeys)<br><br><span class="hljs-comment"># 2. 每个签名者生成部分签名</span><br>partial_sigs = []<br><span class="hljs-keyword">for</span> i, priv <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(privkeys):<br>    <span class="hljs-comment"># 使用自己的私钥和聚合上下文生成部分签名</span><br>    partial_sig = generate_partial_signature(priv, aggregated_pubkey, message)<br>    partial_sigs.append(partial_sig)<br><br><span class="hljs-comment"># 3. 聚合部分签名</span><br>final_signature = aggregate_signatures(partial_sigs)<br><br><span class="hljs-comment"># 验证：只需验证一个签名！</span><br>verify_signature(aggregated_pubkey, message, final_signature)<br><span class="hljs-comment"># 输出：验证通过，但不知道具体是谁签的</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>优势</strong>：</p>
+<ul>
+<li>🎯 <strong>隐私性</strong>：看起来像普通单签交易</li>
+<li>📦 <strong>空间节省</strong>：64字节签名（与单签相同）</li>
+<li>⚡ <strong>验证更快</strong>：只需一次椭圆曲线运算</li>
+</ul>
+<p><strong>实现项目</strong>：</p>
+<ul>
+<li><strong>比特币Taproot</strong>：原生支持Schnorr聚合</li>
+<li><strong>MuSig&#x2F;MuSig2</strong>：标准协议</li>
+<li><strong>Stacks区块链</strong>：完全基于Schnorr</li>
+</ul>
+<h4 id="B-BLS聚合签名（以太坊2-0等）"><a href="#B-BLS聚合签名（以太坊2-0等）" class="headerlink" title="B. BLS聚合签名（以太坊2.0等）"></a><strong>B. BLS聚合签名（以太坊2.0等）</strong></h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># BLS签名天然支持聚合</span><br><span class="hljs-keyword">from</span> py_ecc.bls <span class="hljs-keyword">import</span> G2ProofOfPossession <span class="hljs-keyword">as</span> bls<br><br><span class="hljs-comment"># 三个签名者各自签名</span><br>signatures = []<br><span class="hljs-keyword">for</span> privkey <span class="hljs-keyword">in</span> private_keys:<br>    sig = bls.Sign(privkey, message)<br>    signatures.append(sig)<br><br><span class="hljs-comment"># 聚合签名（简单相加！）</span><br>aggregated_signature = bls.Aggregate(signatures)<br><br><span class="hljs-comment"># 聚合公钥</span><br>public_keys = [bls.SkToPk(priv) <span class="hljs-keyword">for</span> priv <span class="hljs-keyword">in</span> private_keys]<br>aggregated_pubkey = bls._AggregatePKs(public_keys)<br><br><span class="hljs-comment"># 验证聚合签名</span><br>bls.Verify(aggregated_pubkey, message, aggregated_signature)<br><span class="hljs-comment"># 同样，不知道具体谁参与了签名</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>特性</strong>：</p>
+<ul>
+<li>✨ <strong>完美聚合</strong>：签名可任意组合，验证方程不变</li>
+<li>📍 <strong>超短签名</strong>：BLS12-381仅48字节</li>
+<li>🔢 <strong>支持门限</strong>：t-of-n签名天然支持</li>
+</ul>
+<p><strong>应用</strong>：</p>
+<ul>
+<li><strong>以太坊2.0</strong>：验证者签名聚合</li>
+<li><strong>Chainlink</strong>：预言机数据签名</li>
+<li><strong>Dfinity&#x2F;Internet Computer</strong>：共识机制</li>
+</ul>
+<hr>
+<h3 id="方案3：MPC门限签名（最前沿）"><a href="#方案3：MPC门限签名（最前沿）" class="headerlink" title="方案3：MPC门限签名（最前沿）"></a><strong>方案3：MPC门限签名（最前沿）</strong></h3><h4 id="TSS（门限签名方案）"><a href="#TSS（门限签名方案）" class="headerlink" title="TSS（门限签名方案）"></a><strong>TSS（门限签名方案）</strong></h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 使用GG20协议的2-of-3 MPC签名</span><br><span class="hljs-keyword">from</span> tss_lib <span class="hljs-keyword">import</span> TSSParty<br><br><span class="hljs-comment"># 三个参与方分布式生成密钥</span><br>parties = []<br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">3</span>):<br>    party = TSSParty(party_id=i, total_parties=<span class="hljs-number">3</span>, threshold=<span class="hljs-number">2</span>)<br>    parties.append(party)<br><br><span class="hljs-comment"># 分布式密钥生成（DKG）- 无需中心化私钥！</span><br>keygen_msgs = []<br><span class="hljs-keyword">for</span> party <span class="hljs-keyword">in</span> parties:<br>    msgs = party.keygen_round1()<br>    keygen_msgs.extend(msgs)<br><br><span class="hljs-keyword">for</span> party <span class="hljs-keyword">in</span> parties:<br>    party.keygen_round2(keygen_msgs)<br><br><span class="hljs-comment"># 每个参与者获得：</span><br><span class="hljs-comment"># - 一个公钥（共享）</span><br><span class="hljs-comment"># - 一个私钥分片（自己保管）</span><br>shared_public_key = parties[<span class="hljs-number">0</span>].get_public_key()  <span class="hljs-comment"># 所有人都相同</span><br><br><span class="hljs-comment"># 签名时（只需要任意2个参与方）</span><br>signing_parties = [parties[<span class="hljs-number">0</span>], parties[<span class="hljs-number">1</span>]]  <span class="hljs-comment"># Alice和Bob参与</span><br><br><span class="hljs-comment"># 分布式签名</span><br>sign_msgs = []<br><span class="hljs-keyword">for</span> party <span class="hljs-keyword">in</span> signing_parties:<br>    msgs = party.sign_round1(message)<br>    sign_msgs.extend(msgs)<br><br>signatures = []<br><span class="hljs-keyword">for</span> party <span class="hljs-keyword">in</span> signing_parties:<br>    sig_share = party.sign_round2(sign_msgs)<br>    signatures.append(sig_share)<br><br><span class="hljs-comment"># 组合最终签名</span><br>final_signature = combine_signature_shares(signatures)<br><br><span class="hljs-comment"># 链上验证：看起来完全是普通单签！</span><br>verify(shared_public_key, message, final_signature)<br></code></pre></td></tr></table></figure>
+
+<p><strong>核心技术</strong>：</p>
+<ul>
+<li><strong>GG18&#x2F;GG20</strong>：最早实用的TSS协议</li>
+<li><strong>FROST</strong>：更高效，支持灵活参与方</li>
+<li><strong>CMP</strong>：持续MPC，支持动态成员</li>
+</ul>
+<p><strong>实现项目</strong>：</p>
+<ul>
+<li><strong>Fireblocks</strong>：机构MPC钱包</li>
+<li><strong>ZenGo</strong>：无助记词MPC钱包</li>
+<li><strong>Coinbase MPC</strong>：交易所托管方案</li>
+<li><strong>Binance TSS</strong>：交易所热钱包方案</li>
+</ul>
+<p><strong>优势</strong>：</p>
+<ul>
+<li>🛡️ <strong>无单点风险</strong>：私钥从未完整存在</li>
+<li>🕵️ <strong>完全隐私</strong>：链上看不出是多签</li>
+<li>🔄 <strong>灵活参与</strong>：动态调整签名者</li>
+<li>💰 <strong>节省Gas</strong>：链上只需单签验证</li>
+</ul>
+<hr>
+<h2 id="三、方案对比矩阵"><a href="#三、方案对比矩阵" class="headerlink" title="三、方案对比矩阵"></a><strong>三、方案对比矩阵</strong></h2><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>原生多签合约</th>
+<th>Schnorr聚合</th>
+<th>BLS聚合</th>
+<th>MPC-TSS</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>链上表现</strong></td>
+<td>明确是多签</td>
+<td>看起来像单签</td>
+<td>看起来像单签</td>
+<td><strong>完全像单签</strong></td>
+</tr>
+<tr>
+<td><strong>私钥存储</strong></td>
+<td>每个用户完整私钥</td>
+<td>每个用户完整私钥</td>
+<td>每个用户完整私钥</td>
+<td><strong>私钥分片，从未完整</strong></td>
+</tr>
+<tr>
+<td><strong>Gas成本</strong></td>
+<td>非常高（多次确认）</td>
+<td>中等（单次验证）</td>
+<td>低（单次验证）</td>
+<td><strong>最低（单次验证）</strong></td>
+</tr>
+<tr>
+<td><strong>隐私性</strong></td>
+<td>公开所有签名者</td>
+<td>隐藏参与者</td>
+<td>隐藏参与者</td>
+<td><strong>完全隐藏结构</strong></td>
+</tr>
+<tr>
+<td><strong>灵活性</strong></td>
+<td>高（智能合约）</td>
+<td>中等</td>
+<td>高（任意聚合）</td>
+<td><strong>极高（动态调整）</strong></td>
+</tr>
+<tr>
+<td><strong>成熟度</strong></td>
+<td><strong>非常高</strong></td>
+<td>高（比特币已部署）</td>
+<td>中（以太坊2.0）</td>
+<td>中等（快速发展）</td>
+</tr>
+<tr>
+<td><strong>部署复杂度</strong></td>
+<td>简单</td>
+<td>复杂</td>
+<td>复杂</td>
+<td><strong>非常复杂</strong></td>
+</tr>
+<tr>
+<td><strong>适合场景</strong></td>
+<td>企业财库、DAO</td>
+<td>比特币钱包、支付</td>
+<td>质押池、预言机</td>
+<td><strong>交易所、机构托管</strong></td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="四、实际应用案例"><a href="#四、实际应用案例" class="headerlink" title="四、实际应用案例"></a><strong>四、实际应用案例</strong></h2><h3 id="案例1：DAO财库管理（Gnosis-Safe）"><a href="#案例1：DAO财库管理（Gnosis-Safe）" class="headerlink" title="案例1：DAO财库管理（Gnosis Safe）"></a><strong>案例1：DAO财库管理（Gnosis Safe）</strong></h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-string">组织:</span> <span class="hljs-string">Uniswap</span> <span class="hljs-string">DAO</span><br><span class="hljs-string">多签方案:</span> <span class="hljs-string">Gnosis</span> <span class="hljs-string">Safe</span> <span class="hljs-number">6</span><span class="hljs-string">-of-11</span><br><span class="hljs-string">签名者:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">a16z</span> <span class="hljs-string">(风投)</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">Paradigm</span> <span class="hljs-string">(风投)</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">社区代表1</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">社区代表2</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">...</span><br><span class="hljs-string">阈值:</span> <span class="hljs-string">需要6人同意才能动用资金</span><br><span class="hljs-string">链上地址:</span> <span class="hljs-number">0x1a9C</span><span class="hljs-string">...</span> <span class="hljs-string">(公开透明)</span><br><span class="hljs-string">特点:</span> <span class="hljs-string">完全透明，社区可监督</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="案例2：比特币机构托管（MPC-TSS）"><a href="#案例2：比特币机构托管（MPC-TSS）" class="headerlink" title="案例2：比特币机构托管（MPC-TSS）"></a><strong>案例2：比特币机构托管（MPC-TSS）</strong></h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-string">公司:</span> <span class="hljs-string">币安交易所</span><br><span class="hljs-string">方案:</span> <span class="hljs-number">3</span><span class="hljs-string">-of-5</span> <span class="hljs-string">MPC门限签名</span><br><span class="hljs-string">分片持有者:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">北京数据中心</span> <span class="hljs-string">(1片)</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">上海数据中心</span> <span class="hljs-string">(1片)</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">新加坡办公室</span> <span class="hljs-string">(1片)</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">硬件加密机A</span> <span class="hljs-string">(1片)</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">硬件加密机B</span> <span class="hljs-string">(1片)</span><br><span class="hljs-string">取款流程:</span> <span class="hljs-string">任意3个分片组合即可签名</span><br><span class="hljs-string">优势:</span> <span class="hljs-string">无单点故障，黑客需攻击3个地点</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="案例3：以太坊2-0质押（BLS聚合）"><a href="#案例3：以太坊2-0质押（BLS聚合）" class="headerlink" title="案例3：以太坊2.0质押（BLS聚合）"></a><strong>案例3：以太坊2.0质押（BLS聚合）</strong></h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-string">服务:</span> <span class="hljs-string">Lido质押池</span><br><span class="hljs-string">技术:</span> <span class="hljs-string">BLS签名聚合</span><br><span class="hljs-string">场景:</span> <span class="hljs-string">数万验证者同时签名区块</span><br><span class="hljs-string">优化前:</span> <span class="hljs-string">每个签名单独验证</span> <span class="hljs-string">→</span> <span class="hljs-string">Gas爆炸</span><br><span class="hljs-string">优化后:</span> <span class="hljs-string">聚合为一个BLS签名</span> <span class="hljs-string">→</span> <span class="hljs-string">一次验证</span><br><span class="hljs-string">节省:</span> <span class="hljs-string">Gas降低99%+</span><br></code></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="五、选择指南"><a href="#五、选择指南" class="headerlink" title="五、选择指南"></a><strong>五、选择指南</strong></h2><h3 id="根据需求选择："><a href="#根据需求选择：" class="headerlink" title="根据需求选择："></a><strong>根据需求选择</strong>：</h3><table>
+<thead>
+<tr>
+<th>你的需求</th>
+<th>推荐方案</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>简单、透明、可审计</strong></td>
+<td>原生多签合约</td>
+<td>链上完全透明，成熟稳定</td>
+</tr>
+<tr>
+<td><strong>节省费用、隐私保护</strong></td>
+<td>Schnorr聚合</td>
+<td>比特币生态最佳，隐私好</td>
+</tr>
+<tr>
+<td><strong>大规模签名聚合</strong></td>
+<td>BLS聚合</td>
+<td>天生为聚合设计，极高效</td>
+</tr>
+<tr>
+<td><strong>最高安全性、机构级</strong></td>
+<td>MPC-TSS</td>
+<td>无单点风险，私钥永不完整</td>
+</tr>
+<tr>
+<td><strong>兼容性优先</strong></td>
+<td>原生多签</td>
+<td>所有链都支持，钱包兼容好</td>
+</tr>
+<tr>
+<td><strong>技术前沿探索</strong></td>
+<td>MPC或聚合</td>
+<td>代表未来发展方向</td>
+</tr>
+</tbody></table>
+<h3 id="技术栈推荐："><a href="#技术栈推荐：" class="headerlink" title="技术栈推荐："></a><strong>技术栈推荐</strong>：</h3><h4 id="以太坊生态："><a href="#以太坊生态：" class="headerlink" title="以太坊生态："></a><strong>以太坊生态</strong>：</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 企业/DAO：Gnosis Safe</span><br>npm install @gnosis.pm/safe-core-sdk<br><br><span class="hljs-comment"># 开发者：OpenZeppelin模板</span><br>npm install @openzeppelin/contracts<br><br><span class="hljs-comment"># MPC方案：Fireblocks SDK</span><br>npm install @fireblocks/fireblocks-web3-provider<br></code></pre></td></tr></table></figure>
+
+<h4 id="比特币生态："><a href="#比特币生态：" class="headerlink" title="比特币生态："></a><strong>比特币生态</strong>：</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 传统多签：bitcoinjs-lib</span><br>npm install bitcoinjs-lib<br><br><span class="hljs-comment"># Taproot/Schnorr：noble-secp256k1</span><br>npm install @noble/secp256k1<br><br><span class="hljs-comment"># BIP174 PSBT（部分签名交易）</span><br>npm install bip174<br></code></pre></td></tr></table></figure>
+
+<h4 id="通用MPC库："><a href="#通用MPC库：" class="headerlink" title="通用MPC库："></a><strong>通用MPC库</strong>：</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># TSS库：tss-lib（Unbound Security）</span><br>npm install tss-lib<br><br><span class="hljs-comment"># MPC SDK：ZenGo X</span><br>npm install @zengo/xchain-wallet<br></code></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="六、未来趋势"><a href="#六、未来趋势" class="headerlink" title="六、未来趋势"></a><strong>六、未来趋势</strong></h2><h3 id="1-智能合约钱包-多签"><a href="#1-智能合约钱包-多签" class="headerlink" title="1. 智能合约钱包 + 多签"></a><strong>1. 智能合约钱包 + 多签</strong></h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// ERC-4337账户抽象 + 多签<br>contract SmartAccount &#123;<br>    // 支持多种验证方式混合<br>    function validateSignature(<br>        bytes32 messageHash, <br>        bytes memory signature<br>    ) public view returns (bool) &#123;<br>        // 可以是：多签、生物识别、社交恢复、硬件密钥等<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-跨链多签"><a href="#2-跨链多签" class="headerlink" title="2. 跨链多签"></a><strong>2. 跨链多签</strong></h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-string">方案:</span> <span class="hljs-string">MPC-TSS跨链签名</span><br><span class="hljs-string">功能:</span> <span class="hljs-string">同一套私钥分片控制多个链的资产</span><br><span class="hljs-string">实现:</span> <br>  <span class="hljs-bullet">-</span> <span class="hljs-string">比特币:</span> <span class="hljs-string">生成P2TR地址</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">以太坊:</span> <span class="hljs-string">生成EOA地址</span>  <br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">Solana:</span> <span class="hljs-string">生成Ed25519地址</span><br><span class="hljs-string">优点:</span> <span class="hljs-string">统一管理，无需跨链桥</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="3-可编程多签策略"><a href="#3-可编程多签策略" class="headerlink" title="3. 可编程多签策略"></a><strong>3. 可编程多签策略</strong></h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// 基于时间、金额、角色的动态策略<br>contract PolicyBasedMultisig &#123;<br>    mapping(address =&gt; Role) public roles;<br>    <br>    function checkPolicy(Transaction tx) public view returns (bool) &#123;<br>        // 工作日需要2人，周末需要3人<br>        // 超过$10,000需要CFO+CEO<br>        // 白名单地址只需要1人<br>        // 时间锁：大额交易24小时后生效<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h2><p><strong>多签钱包的技术演进</strong>：</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs objectivec">第一代：原生多签合约（透明但昂贵）<br>第二代：聚合签名（隐私且高效）  <br>第三代：<span class="hljs-built_in">MPC</span>门限签名（安全且灵活）<br>第四代：智能合约账户抽象（可编程策略）<br></code></pre></td></tr></table></figure>
+
+<p><strong>当前最佳实践</strong>：</p>
+<ul>
+<li><strong>普通用户&#x2F;DAO</strong>：Gnosis Safe（平衡安全与易用）</li>
+<li><strong>比特币用户</strong>：Taproot多签（隐私+节省）</li>
+<li><strong>机构&#x2F;交易所</strong>：MPC-TSS（最高安全性）</li>
+<li><strong>质押服务</strong>：BLS聚合（大规模优化）</li>
+</ul>
+<p>选择时需权衡：<strong>安全性、成本、隐私、易用性</strong>，没有完美方案，只有最适合的方案。</p>
+<p>这是个非常专业、也非常现实的业务问题 👍：<br> <strong>“多个质检员，需要多数通过才算有效”本质是投票型授权模型</strong>，这时就要区分：</p>
+<blockquote>
+<p>用 <strong>Schnorr 聚合签名</strong> 还是 <strong>MPC 门限签名（Threshold Signature）</strong>？</p>
+</blockquote>
+<p>先给结论，再讲原因与场景。</p>
+<hr>
+<h1 id="✅-一句话结论"><a href="#✅-一句话结论" class="headerlink" title="✅ 一句话结论"></a>✅ 一句话结论</h1><table>
+<thead>
+<tr>
+<th>需求侧重点</th>
+<th>选型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>要看到<strong>是谁通过了</strong>，可审计、可追责</td>
+<td>✅ Schnorr 聚合签名</td>
+</tr>
+<tr>
+<td>只关心<strong>是否达到人数阈值</strong>，不关心是谁</td>
+<td>✅ MPC 门限签名</td>
+</tr>
+<tr>
+<td>监管审批 &#x2F; 政务授权</td>
+<td>✅ MPC</td>
+</tr>
+<tr>
+<td>质量溯源 &#x2F; 责任追踪</td>
+<td>✅ Schnorr</td>
+</tr>
+</tbody></table>
+<p>在<strong>农产品质检溯源场景</strong>里：<br> 👉 <strong>优先选 Schnorr 聚合签名，更符合责任审计逻辑。</strong></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%8C%BA%E5%9D%97%E9%93%BE%E6%8A%80%E6%9C%AF%E4%B8%8E%E5%BA%94%E7%94%A8/" class="category-chain-item">区块链技术与应用</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%8C%BA%E5%9D%97%E9%93%BE%E6%8A%80%E6%9C%AF%E4%B8%8E%E5%BA%94%E7%94%A8/DAPP%E5%BC%80%E5%8F%91/" class="category-chain-item">DAPP开发</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%8C%BA%E5%9D%97%E9%93%BE%E6%8A%80%E6%9C%AF%E4%B8%8E%E5%BA%94%E7%94%A8/DAPP%E5%BC%80%E5%8F%91/%E9%92%B1%E5%8C%85%E5%BC%80%E5%8F%91/" class="category-chain-item">钱包开发</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>多签钱包</div>
+      <div>http://example.com/2026/01/07/区块链技术与应用/DAPP开发/钱包开发/多签钱包/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Ling</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年1月7日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/12/28/%E5%85%A8%E6%A0%88%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/%E5%89%8D%E7%AB%AF/%E6%B5%8F%E8%A7%88%E5%99%A8%E6%B8%B2%E6%9F%93%E5%8E%9F%E7%90%86/" title="浏览器渲染原理">
+                        <span class="hidden-mobile">浏览器渲染原理</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

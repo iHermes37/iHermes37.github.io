@@ -1,0 +1,975 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Ling">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="模式类别 模式名称 核心目的 关键机制&#x2F;思想 典型应用场景    可升级性与代理 代理模式 使已部署的合约逻辑可以升级，同时保留状态。 使用 delegatecall 将执行逻辑与数据存储分离。代理合约持有状态和逻辑合约地址。 需要修复Bug或迭代功能的DApp、复杂DeFi协议。    透明代理 解决代理与逻辑合约间的函数选择器冲突。 基于调用者身份：管理员调用在代理执行，用户">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式">
+<meta property="og:url" content="http://example.com/2025/11/21/%E5%8C%BA%E5%9D%97%E9%93%BE%E6%8A%80%E6%9C%AF%E4%B8%8E%E5%BA%94%E7%94%A8/DAPP%E5%BC%80%E5%8F%91/%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91/Ethereum/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/index.html">
+<meta property="og:site_name" content="The Peak Tower">
+<meta property="og:description" content="模式类别 模式名称 核心目的 关键机制&#x2F;思想 典型应用场景    可升级性与代理 代理模式 使已部署的合约逻辑可以升级，同时保留状态。 使用 delegatecall 将执行逻辑与数据存储分离。代理合约持有状态和逻辑合约地址。 需要修复Bug或迭代功能的DApp、复杂DeFi协议。    透明代理 解决代理与逻辑合约间的函数选择器冲突。 基于调用者身份：管理员调用在代理执行，用户">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2025/11/21/UmNlQxJStWVjg9F.png">
+<meta property="og:image" content="https://s2.loli.net/2025/11/21/Hf9AxmOoCBavz2G.png">
+<meta property="article:published_time" content="2025-11-21T07:05:57.296Z">
+<meta property="article:modified_time" content="2026-01-07T08:20:30.345Z">
+<meta property="article:author" content="Ling">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2025/11/21/UmNlQxJStWVjg9F.png">
+  
+  
+  
+  <title>设计模式 - The Peak Tower</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":"ture","follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"7a4M5yfyGptX0OG18qvJppXQ-gzGzoHsz","app_key":"y6dZFtA8I8Lg1KVhHbujblfB","server_url":"https://7a4m5yfy.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="设计模式"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          5.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          47 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">设计模式</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p><img src="https://s2.loli.net/2025/11/21/UmNlQxJStWVjg9F.png" srcset="/img/loading.gif" lazyload></p>
+<table>
+<thead>
+<tr>
+<th align="left">模式类别</th>
+<th align="left">模式名称</th>
+<th align="left">核心目的</th>
+<th align="left">关键机制&#x2F;思想</th>
+<th align="left">典型应用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>可升级性与代理</strong></td>
+<td align="left"><strong>代理模式</strong></td>
+<td align="left">使已部署的合约逻辑可以升级，同时保留状态。</td>
+<td align="left">使用 <code>delegatecall</code> 将执行逻辑与数据存储分离。代理合约持有状态和逻辑合约地址。</td>
+<td align="left">需要修复Bug或迭代功能的DApp、复杂DeFi协议。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left"><strong>透明代理</strong></td>
+<td align="left">解决代理与逻辑合约间的函数选择器冲突。</td>
+<td align="left">基于调用者身份：管理员调用在代理执行，用户调用被转发。</td>
+<td align="left">OpenZeppelin升级库的标准模式，适用于大多数可升级合约。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left"><strong>UUPS代理</strong></td>
+<td align="left">更Gas高效的代理模式，将升级逻辑放在逻辑合约中。</td>
+<td align="left">升级函数是逻辑合约的一部分，代理合约更轻量。</td>
+<td align="left">对Gas成本敏感的项目，逻辑合约本身需要处理升级。</td>
+</tr>
+<tr>
+<td align="left"><strong>访问控制</strong></td>
+<td align="left"><strong>权限控制</strong></td>
+<td align="left">限制特定函数只能被授权地址调用。</td>
+<td align="left">使用修饰器（如 <code>onlyOwner</code>, <code>hasRole</code>）进行函数前置检查。</td>
+<td align="left">所有者功能（如提款、暂停）、管理员操作、角色化访问（铸造、升级）。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left"><strong>紧急停止</strong></td>
+<td align="left">在发现漏洞或攻击时，快速暂停合约关键功能。</td>
+<td align="left">设置一个 <code>paused</code> 布尔标志，在函数开始时检查。</td>
+<td align="left">任何需要风险控制的合约，尤其是在项目初期。</td>
+</tr>
+<tr>
+<td align="left"><strong>生命周期与状态</strong></td>
+<td align="left"><strong>状态机</strong></td>
+<td align="left">明确管理合约业务逻辑的阶段性状态流转。</td>
+<td align="left">定义一组状态（如 <code>Pending</code>, <code>Active</code>, <code>Completed</code>），并通过函数在不同状态间转换。</td>
+<td align="left">ICO（募资中&#x2F;已完成）、投票、游戏关卡、跨链交易状态。</td>
+</tr>
+<tr>
+<td align="left"><strong>资金管理</strong></td>
+<td align="left"><strong>提款模式</strong></td>
+<td align="left">让用户主动提取属于他们的资金，避免主动发送的高Gas成本和风险。</td>
+<td align="left">将用户的余额记录在映射中，用户调用 <code>withdraw</code> 函数来领取。</td>
+<td align="left">空投、收益奖励分配、彩票奖金、退款。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left"><strong>速率限制</strong></td>
+<td align="left">控制在一定时间内资金流出的总量，降低漏洞影响。</td>
+<td align="left">记录时间段内的流出总量，超过限额则拒绝交易。</td>
+<td align="left">国库管理、Vault合约，作为安全防护层。</td>
+</tr>
+<tr>
+<td align="left"><strong>Gas优化</strong></td>
+<td align="left"><strong>批量操作</strong></td>
+<td align="left">降低用户执行重复操作的总体Gas成本。</td>
+<td align="left">允许用户在一次交易中执行多个操作（如批量转账、批量授权）。</td>
+<td align="left">NFT Mint、空投、DeFi组合操作。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left"><strong>索引模式</strong></td>
+<td align="left">使前端应用能高效地过滤和查询合约事件。</td>
+<td align="left">在事件（Event）中包含索引参数（indexed），最多3个。</td>
+<td align="left">需要按特定地址、Token ID等快速查询历史记录的DApp。</td>
+</tr>
+<tr>
+<td align="left"><strong>依赖与集成</strong></td>
+<td align="left"><strong>依赖注入</strong></td>
+<td align="left">降低合约间的耦合度，便于测试和升级依赖组件。</td>
+<td align="left">将关键依赖合约的地址保存在一个状态变量中，允许更改。</td>
+<td align="left">价格预言机、随机数生成器、治理合约等可更换组件的集成。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left"><strong>合约注册表</strong></td>
+<td align="left">集中管理系统中所有合约的地址，便于查找和升级。</td>
+<td align="left">一个主合约充当注册表，通过名称映射到最新合约地址。</td>
+<td align="left">复杂的多合约DApp系统，其中合约间需要相互寻址。</td>
+</tr>
+<tr>
+<td align="left"><strong>创建与初始化</strong></td>
+<td align="left"><strong>工厂模式</strong></td>
+<td align="left">批量创建和部署相同逻辑的新合约。</td>
+<td align="left">一个工厂合约使用 <code>new</code> 关键字或CREATE2操作码来部署多个子合约。</td>
+<td align="left">部署多个NFT集合、创建新的交易对、创建个人钱包代理。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left"><strong>初始化函数</strong></td>
+<td align="left">在代理模式或工厂模式中，替代构造函数来初始化合约状态。</td>
+<td align="left">一个可被外部调用的函数（如 <code>initialize</code>），通常带有初始化保护。</td>
+<td align="left">可升级合约的初始设置，工厂创建合约后的参数配置。</td>
+</tr>
+</tbody></table>
+<h1 id="代理模式-合约升级"><a href="#代理模式-合约升级" class="headerlink" title="代理模式(合约升级)"></a>代理模式(合约升级)</h1><p><a target="_blank" rel="noopener" href="https://learnblockchain.cn/article/1102">以太坊实现智能合约升级的三种代理模式 | 登链社区 | 区块链技术社区</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/zhanchenjin/p/18771552">Solidity透明代理合约：深入理解与实现 - 若-飞 - 博客园</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.learnblockchain.cn/article/2663">EIP-1167: 代理合约 | 登链社区 | 区块链技术社区</a></p>
+<p>代理模式应运而生，它允许我们将合约逻辑与数据存储分离，实现合约的可升级性。</p>
+<p><img src="https://s2.loli.net/2025/11/21/Hf9AxmOoCBavz2G.png" srcset="/img/loading.gif" lazyload></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">// 部署脚本</span><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">deploy</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-comment">// 步骤1: 部署逻辑合约</span><br>    <span class="hljs-keyword">const</span> <span class="hljs-title class_">Logic</span> = <span class="hljs-keyword">await</span> ethers.<span class="hljs-title function_">getContractFactory</span>(<span class="hljs-string">&quot;LogicContract&quot;</span>);<br>    <span class="hljs-keyword">const</span> logic = <span class="hljs-keyword">await</span> <span class="hljs-title class_">Logic</span>.<span class="hljs-title function_">deploy</span>(); <span class="hljs-comment">// 构造函数在这里执行，但毫无意义！</span><br>    <br>    <span class="hljs-comment">// 步骤2: 部署代理合约  </span><br>    <span class="hljs-keyword">const</span> <span class="hljs-title class_">Proxy</span> = <span class="hljs-keyword">await</span> ethers.<span class="hljs-title function_">getContractFactory</span>(<span class="hljs-string">&quot;TransparentProxy&quot;</span>);<br>    <span class="hljs-keyword">const</span> proxy = <span class="hljs-keyword">await</span> <span class="hljs-title class_">Proxy</span>.<span class="hljs-title function_">deploy</span>(logic.<span class="hljs-property">address</span>, admin.<span class="hljs-property">address</span>);<br>    <br>    <span class="hljs-comment">// 步骤3: 关键步骤！通过代理调用初始化函数</span><br>    <span class="hljs-keyword">const</span> proxyAsLogic = <span class="hljs-keyword">await</span> ethers.<span class="hljs-title function_">getContractAt</span>(<span class="hljs-string">&quot;LogicContract&quot;</span>, proxy.<span class="hljs-property">address</span>);<br>    <span class="hljs-keyword">await</span> proxyAsLogic.<span class="hljs-title function_">initialize</span>(admin.<span class="hljs-property">address</span>); <span class="hljs-comment">// ✅ 这个调用在代理上下文中执行</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+<h3 id="为什么需要这个手动步骤？"><a href="#为什么需要这个手动步骤？" class="headerlink" title="为什么需要这个手动步骤？"></a>为什么需要这个手动步骤？</h3><p><strong>问题所在：</strong></p>
+<ul>
+<li>逻辑合约的<strong>构造函数</strong>在逻辑合约部署时运行</li>
+<li>但代理模式中，<strong>存储属于代理合约</strong></li>
+<li>所以逻辑合约构造函数设置的初始值都存储在逻辑合约自己的存储中，而不是代理合约的存储中</li>
+</ul>
+<p><strong>解决方案：</strong></p>
+<ul>
+<li>用 <code>initialize</code> 函数替代构造函数</li>
+<li>在代理部署后<strong>手动调用一次</strong></li>
+<li>这样初始化操作就在代理合约的存储中执行</li>
+</ul>
+<p>好的，我将为您提供一个完整的透明代理模式示例，包含代理合约、逻辑合约以及测试步骤。</p>
+<h2 id="透明代理模式完整示例"><a href="#透明代理模式完整示例" class="headerlink" title="透明代理模式完整示例"></a>透明代理模式完整示例</h2><h3 id="1-逻辑合约-Logic-Contract"><a href="#1-逻辑合约-Logic-Contract" class="headerlink" title="1. 逻辑合约 (Logic Contract)"></a>1. 逻辑合约 (Logic Contract)</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>pragma solidity ^0.8.0;<br><br>// 逻辑合约 - 包含业务逻辑<br>contract LogicContract &#123;<br>    // 重要：存储布局必须与代理合约兼容<br>    // 这些状态变量实际上会存储在代理合约中<br>    address private _owner;<br>    uint256 private _value;<br>    mapping(address =&gt; uint256) private _balances;<br>    <br>    // 事件<br>    event ValueUpdated(uint256 oldValue, uint256 newValue);<br>    event BalanceAdded(address indexed user, uint256 amount);<br>    <br>    // 初始化函数 - 替代构造函数<br>    function initialize(address owner_) external &#123;<br>        require(_owner == address(0), &quot;Already initialized&quot;);<br>        _owner = owner_;<br>    &#125;<br>    <br>    // 业务逻辑函数<br>    function setValue(uint256 newValue) external &#123;<br>        uint256 oldValue = _value;<br>        _value = newValue;<br>        emit ValueUpdated(oldValue, newValue);<br>    &#125;<br>    <br>    function getValue() external view returns (uint256) &#123;<br>        return _value;<br>    &#125;<br>    <br>    function addBalance(uint256 amount) external &#123;<br>        _balances[msg.sender] += amount;<br>        emit BalanceAdded(msg.sender, amount);<br>    &#125;<br>    <br>    function getBalance(address user) external view returns (uint256) &#123;<br>        return _balances[user];<br>    &#125;<br>    <br>    function getOwner() external view returns (address) &#123;<br>        return _owner;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-代理合约-Proxy-Contract"><a href="#2-代理合约-Proxy-Contract" class="headerlink" title="2. 代理合约 (Proxy Contract)"></a>2. 代理合约 (Proxy Contract)</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>pragma solidity ^0.8.0;<br><br>// 透明代理合约<br>contract TransparentProxy &#123;<br>    // 存储槽定义 - 使用随机槽位避免冲突<br>    bytes32 private constant _IMPLEMENTATION_SLOT = <br>        0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;<br>    bytes32 private constant _ADMIN_SLOT = <br>        0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103;<br>    <br>    // 构造函数<br>    constructor(address logicAddr, address admin_) &#123;<br>        _setAdmin(admin_);<br>        _setImplementation(logicAddr);<br>    &#125;<br>    <br>    // 修改器 - 仅管理员可调用<br>    modifier onlyAdmin() &#123;<br>        require(msg.sender == _getAdmin(), &quot;Caller is not admin&quot;);<br>        _;<br>    &#125;<br>    <br>    // 回退函数 - 透明代理的核心<br>    fallback() external payable &#123;<br>        address impl = _getImplementation();<br>        require(impl != address(0), &quot;Implementation not set&quot;);<br>        <br>        // 使用delegatecall转发调用<br>        assembly &#123;<br>            calldatacopy(0, 0, calldatasize())<br>            let result := delegatecall(gas(), impl, 0, calldatasize(), 0, 0)<br>            returndatacopy(0, 0, returndatasize())<br>            <br>            switch result<br>            case 0 &#123; revert(0, returndatasize()) &#125;<br>            default &#123; return(0, returndatasize()) &#125;<br>        &#125;<br>    &#125;<br>    <br>    receive() external payable &#123;<br>        // 允许接收ETH<br>    &#125;<br>    <br>    // 管理员函数 - 升级逻辑合约<br>    function upgradeTo(address newImplementation) external onlyAdmin &#123;<br>        _setImplementation(newImplementation);<br>    &#125;<br>    <br>    // 获取实现地址<br>    function getImplementation() external view returns (address) &#123;<br>        return _getImplementation();<br>    &#125;<br>    <br>    // 获取管理员<br>    function getAdmin() external view returns (address) &#123;<br>        return _getAdmin();<br>    &#125;<br>    <br>    // 内部存储操作函数<br>    function _getImplementation() internal view returns (address) &#123;<br>        return _getAddress(_IMPLEMENTATION_SLOT);<br>    &#125;<br>    <br>    function _setImplementation(address newImplementation) internal &#123;<br>        _setAddress(_IMPLEMENTATION_SLOT, newImplementation);<br>    &#125;<br>    <br>    function _getAdmin() internal view returns (address) &#123;<br>        return _getAddress(_ADMIN_SLOT);<br>    &#125;<br>    <br>    function _setAdmin(address admin_) internal &#123;<br>        _setAddress(_ADMIN_SLOT, admin_);<br>    &#125;<br>    <br>    function _getAddress(bytes32 slot) internal view returns (address addr) &#123;<br>        assembly &#123;<br>            addr := sload(slot)<br>        &#125;<br>    &#125;<br>    <br>    function _setAddress(bytes32 slot, address addr) internal &#123;<br>        assembly &#123;<br>            sstore(slot, addr)<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-升级版逻辑合约-Updated-Logic-Contract"><a href="#3-升级版逻辑合约-Updated-Logic-Contract" class="headerlink" title="3. 升级版逻辑合约 (Updated Logic Contract)"></a>3. 升级版逻辑合约 (Updated Logic Contract)</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>pragma solidity ^0.8.0;<br><br>// 升级版逻辑合约 - 添加新功能，保持存储兼容<br>contract LogicContractV2 &#123;<br>    // 重要：必须保持与V1完全相同的存储布局<br>    address private _owner;<br>    uint256 private _value;<br>    mapping(address =&gt; uint256) private _balances;<br>    <br>    // 新增状态变量必须追加在末尾<br>    string private _name; // 新增功能<br>    <br>    // 事件<br>    event ValueUpdated(uint256 oldValue, uint256 newValue);<br>    event BalanceAdded(address indexed user, uint256 amount);<br>    event NameUpdated(string newName); // 新增事件<br>    <br>    // 初始化函数<br>    function initialize(address owner_) external &#123;<br>        require(_owner == address(0), &quot;Already initialized&quot;);<br>        _owner = owner_;<br>        _name = &quot;Default&quot;; // 新增初始化<br>    &#125;<br>    <br>    // 保持原有函数不变<br>    function setValue(uint256 newValue) external &#123;<br>        uint256 oldValue = _value;<br>        _value = newValue;<br>        emit ValueUpdated(oldValue, newValue);<br>    &#125;<br>    <br>    function getValue() external view returns (uint256) &#123;<br>        return _value;<br>    &#125;<br>    <br>    function addBalance(uint256 amount) external &#123;<br>        _balances[msg.sender] += amount;<br>        emit BalanceAdded(msg.sender, amount);<br>    &#125;<br>    <br>    function getBalance(address user) external view returns (uint256) &#123;<br>        return _balances[user];<br>    &#125;<br>    <br>    function getOwner() external view returns (address) &#123;<br>        return _owner;<br>    &#125;<br>    <br>    // 新增功能<br>    function setName(string memory newName) external &#123;<br>        _name = newName;<br>        emit NameUpdated(newName);<br>    &#125;<br>    <br>    function getName() external view returns (string memory) &#123;<br>        return _name;<br>    &#125;<br>    <br>    // 增强功能 - 带条件的余额添加<br>    function addBalanceWithCheck(uint256 amount) external &#123;<br>        require(amount &gt; 0, &quot;Amount must be positive&quot;);<br>        require(amount &lt;= 1000, &quot;Amount too large&quot;);<br>        _balances[msg.sender] += amount;<br>        emit BalanceAdded(msg.sender, amount);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="4-部署和测试脚本-Hardhat示例"><a href="#4-部署和测试脚本-Hardhat示例" class="headerlink" title="4. 部署和测试脚本 (Hardhat示例)"></a>4. 部署和测试脚本 (Hardhat示例)</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> &#123; ethers &#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;hardhat&quot;</span>);<br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">main</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">const</span> [admin, user] = <span class="hljs-keyword">await</span> ethers.<span class="hljs-title function_">getSigners</span>();<br>    <br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;Deploying LogicContract V1...&quot;</span>);<br>    <span class="hljs-keyword">const</span> <span class="hljs-title class_">LogicContractV1</span> = <span class="hljs-keyword">await</span> ethers.<span class="hljs-title function_">getContractFactory</span>(<span class="hljs-string">&quot;LogicContract&quot;</span>);<br>    <span class="hljs-keyword">const</span> logicV1 = <span class="hljs-keyword">await</span> <span class="hljs-title class_">LogicContractV1</span>.<span class="hljs-title function_">deploy</span>();<br>    <span class="hljs-keyword">await</span> logicV1.<span class="hljs-title function_">deployed</span>();<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;LogicContract V1 deployed to:&quot;</span>, logicV1.<span class="hljs-property">address</span>);<br>    <br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;Deploying TransparentProxy...&quot;</span>);<br>    <span class="hljs-keyword">const</span> <span class="hljs-title class_">TransparentProxy</span> = <span class="hljs-keyword">await</span> ethers.<span class="hljs-title function_">getContractFactory</span>(<span class="hljs-string">&quot;TransparentProxy&quot;</span>);<br>    <span class="hljs-keyword">const</span> proxy = <span class="hljs-keyword">await</span> <span class="hljs-title class_">TransparentProxy</span>.<span class="hljs-title function_">deploy</span>(logicV1.<span class="hljs-property">address</span>, admin.<span class="hljs-property">address</span>);<br>    <span class="hljs-keyword">await</span> proxy.<span class="hljs-title function_">deployed</span>();<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;TransparentProxy deployed to:&quot;</span>, proxy.<span class="hljs-property">address</span>);<br>    <br>    <span class="hljs-comment">// 通过代理调用逻辑合约</span><br>    <span class="hljs-keyword">const</span> proxyAsLogic = <span class="hljs-keyword">await</span> ethers.<span class="hljs-title function_">getContractAt</span>(<span class="hljs-string">&quot;LogicContract&quot;</span>, proxy.<span class="hljs-property">address</span>);<br>    <br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;Initializing proxy...&quot;</span>);<br>    <span class="hljs-keyword">const</span> initTx = <span class="hljs-keyword">await</span> proxyAsLogic.<span class="hljs-title function_">initialize</span>(admin.<span class="hljs-property">address</span>);<br>    <span class="hljs-keyword">await</span> initTx.<span class="hljs-title function_">wait</span>();<br>    <br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;Testing V1 functionality...&quot;</span>);<br>    <span class="hljs-keyword">await</span> proxyAsLogic.<span class="hljs-title function_">setValue</span>(<span class="hljs-number">42</span>);<br>    <span class="hljs-keyword">const</span> value = <span class="hljs-keyword">await</span> proxyAsLogic.<span class="hljs-title function_">getValue</span>();<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;Value from proxy:&quot;</span>, value.<span class="hljs-title function_">toString</span>());<br>    <br>    <span class="hljs-keyword">await</span> proxyAsLogic.<span class="hljs-title function_">connect</span>(user).<span class="hljs-title function_">addBalance</span>(<span class="hljs-number">100</span>);<br>    <span class="hljs-keyword">const</span> balance = <span class="hljs-keyword">await</span> proxyAsLogic.<span class="hljs-title function_">getBalance</span>(user.<span class="hljs-property">address</span>);<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;User balance:&quot;</span>, balance.<span class="hljs-title function_">toString</span>());<br>    <br>    <span class="hljs-comment">// 部署升级版逻辑合约</span><br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;Deploying LogicContract V2...&quot;</span>);<br>    <span class="hljs-keyword">const</span> <span class="hljs-title class_">LogicContractV2</span> = <span class="hljs-keyword">await</span> ethers.<span class="hljs-title function_">getContractFactory</span>(<span class="hljs-string">&quot;LogicContractV2&quot;</span>);<br>    <span class="hljs-keyword">const</span> logicV2 = <span class="hljs-keyword">await</span> <span class="hljs-title class_">LogicContractV2</span>.<span class="hljs-title function_">deploy</span>();<br>    <span class="hljs-keyword">await</span> logicV2.<span class="hljs-title function_">deployed</span>();<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;LogicContract V2 deployed to:&quot;</span>, logicV2.<span class="hljs-property">address</span>);<br>    <br>    <span class="hljs-comment">// 升级代理合约</span><br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;Upgrading proxy to V2...&quot;</span>);<br>    <span class="hljs-keyword">const</span> upgradeTx = <span class="hljs-keyword">await</span> proxy.<span class="hljs-title function_">upgradeTo</span>(logicV2.<span class="hljs-property">address</span>);<br>    <span class="hljs-keyword">await</span> upgradeTx.<span class="hljs-title function_">wait</span>();<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;Proxy upgraded to V2&quot;</span>);<br>    <br>    <span class="hljs-comment">// 通过代理调用V2的新功能</span><br>    <span class="hljs-keyword">const</span> proxyAsLogicV2 = <span class="hljs-keyword">await</span> ethers.<span class="hljs-title function_">getContractAt</span>(<span class="hljs-string">&quot;LogicContractV2&quot;</span>, proxy.<span class="hljs-property">address</span>);<br>    <br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;Testing V2 new functionality...&quot;</span>);<br>    <span class="hljs-keyword">await</span> proxyAsLogicV2.<span class="hljs-title function_">setName</span>(<span class="hljs-string">&quot;MyUpgradedContract&quot;</span>);<br>    <span class="hljs-keyword">const</span> name = <span class="hljs-keyword">await</span> proxyAsLogicV2.<span class="hljs-title function_">getName</span>();<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;Contract name:&quot;</span>, name);<br>    <br>    <span class="hljs-comment">// 测试数据持久性</span><br>    <span class="hljs-keyword">const</span> persistedValue = <span class="hljs-keyword">await</span> proxyAsLogicV2.<span class="hljs-title function_">getValue</span>();<br>    <span class="hljs-keyword">const</span> persistedBalance = <span class="hljs-keyword">await</span> proxyAsLogicV2.<span class="hljs-title function_">getBalance</span>(user.<span class="hljs-property">address</span>);<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;Persisted value:&quot;</span>, persistedValue.<span class="hljs-title function_">toString</span>());<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;Persisted balance:&quot;</span>, persistedBalance.<span class="hljs-title function_">toString</span>());<br>    <br>    <span class="hljs-comment">// 测试透明代理规则</span><br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;Testing transparent proxy rules...&quot;</span>);<br>    <span class="hljs-keyword">try</span> &#123;<br>        <span class="hljs-comment">// 用户尝试调用升级函数 - 应该失败</span><br>        <span class="hljs-keyword">await</span> proxy.<span class="hljs-title function_">connect</span>(user).<span class="hljs-title function_">upgradeTo</span>(logicV1.<span class="hljs-property">address</span>);<br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;ERROR: User should not be able to upgrade&quot;</span>);<br>    &#125; <span class="hljs-keyword">catch</span> (error) &#123;<br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;✓ Correctly blocked user from upgrading&quot;</span>);<br>    &#125;<br>&#125;<br><br><span class="hljs-title function_">main</span>().<span class="hljs-title function_">catch</span>(<span class="hljs-function">(<span class="hljs-params">error</span>) =&gt;</span> &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">error</span>(error);<br>    process.<span class="hljs-property">exitCode</span> = <span class="hljs-number">1</span>;<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<h3 id="5-关键特性说明"><a href="#5-关键特性说明" class="headerlink" title="5. 关键特性说明"></a>5. 关键特性说明</h3><h4 id="透明代理的核心规则验证："><a href="#透明代理的核心规则验证：" class="headerlink" title="透明代理的核心规则验证："></a>透明代理的核心规则验证：</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-comment">// 管理员调用 upgradeTo() -&gt; 在代理中执行（成功）</span><br><span class="hljs-keyword">await</span> proxy.<span class="hljs-title function_">connect</span>(admin).<span class="hljs-title function_">upgradeTo</span>(newImplementation); <span class="hljs-comment">// ✅ 成功</span><br><br><span class="hljs-comment">// 用户调用 upgradeTo() -&gt; 转发到逻辑合约（失败，因为逻辑合约没有这个函数）</span><br><span class="hljs-keyword">await</span> proxy.<span class="hljs-title function_">connect</span>(user).<span class="hljs-title function_">upgradeTo</span>(newImplementation); <span class="hljs-comment">// ❌ 失败</span><br><br><span class="hljs-comment">// 用户调用 setValue() -&gt; 转发到逻辑合约（成功）</span><br><span class="hljs-keyword">await</span> proxy.<span class="hljs-title function_">connect</span>(user).<span class="hljs-title function_">setValue</span>(<span class="hljs-number">123</span>); <span class="hljs-comment">// ✅ 成功</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="6-存储布局验证"><a href="#6-存储布局验证" class="headerlink" title="6. 存储布局验证"></a>6. 存储布局验证</h3><p>确保V1和V2的存储布局完全兼容：</p>
+<figure class="highlight nestedtext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs nestedtext"><span class="hljs-attribute">V1 存储布局</span><span class="hljs-punctuation">:</span><br><span class="hljs-attribute">slot 0</span><span class="hljs-punctuation">:</span> <span class="hljs-string">_owner (address)</span><br><span class="hljs-attribute">slot 1</span><span class="hljs-punctuation">:</span> <span class="hljs-string">_value (uint256)  </span><br><span class="hljs-attribute">slot 2</span><span class="hljs-punctuation">:</span> <span class="hljs-string">_balances (mapping)</span><br><br><span class="hljs-attribute">V2 存储布局</span><span class="hljs-punctuation">:</span><br><span class="hljs-attribute">slot 0</span><span class="hljs-punctuation">:</span> <span class="hljs-string">_owner (address)      ← 相同</span><br><span class="hljs-attribute">slot 1</span><span class="hljs-punctuation">:</span> <span class="hljs-string">_value (uint256)      ← 相同  </span><br><span class="hljs-attribute">slot 2</span><span class="hljs-punctuation">:</span> <span class="hljs-string">_balances (mapping)   ← 相同</span><br><span class="hljs-attribute">slot 3</span><span class="hljs-punctuation">:</span> <span class="hljs-string">_name (string)        ← 新增，在末尾</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>这个透明代理示例展示了：</p>
+<ol>
+<li><strong>清晰的职责分离</strong>：代理处理转发和升级，逻辑合约处理业务</li>
+<li><strong>安全的访问控制</strong>：基于调用者身份的路由决策</li>
+<li><strong>无缝升级能力</strong>：升级时数据自动保留</li>
+<li><strong>存储布局兼容性</strong>：新增状态变量必须追加在末尾</li>
+<li><strong>透明的用户体验</strong>：用户无需感知代理机制</li>
+</ol>
+<p>这种模式为以太坊DApp提供了企业级的可升级性和维护性。</p>
+<p><strong>是的，透明代理会自动将所有调用参数完整地传递给逻辑合约。</strong> 这是通过代理合约的 <code>fallback</code> 函数和 <code>delegatecall</code> 机制实现的。</p>
+<h2 id="参数传递的详细机制"><a href="#参数传递的详细机制" class="headerlink" title="参数传递的详细机制"></a>参数传递的详细机制</h2><h3 id="1-核心代码解析"><a href="#1-核心代码解析" class="headerlink" title="1. 核心代码解析"></a>1. 核心代码解析</h3><p>让我们仔细看代理合约中的关键部分：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs solidity">fallback() external payable &#123;<br>    address impl = _getImplementation();<br>    require(impl != address(0), &quot;Implementation not set&quot;);<br>    <br>    assembly &#123;<br>        // 步骤1: 将调用数据复制到内存中<br>        calldatacopy(0, 0, calldatasize())<br>        <br>        // 步骤2: 使用delegatecall转发调用，包含所有参数<br>        let result := delegatecall(gas(), impl, 0, calldatasize(), 0, 0)<br>        <br>        // 步骤3: 将返回数据复制到内存<br>        returndatacopy(0, 0, returndatasize())<br>        <br>        switch result<br>        case 0 &#123; revert(0, returndatasize()) &#125;<br>        default &#123; return(0, returndatasize()) &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-参数传递的完整流程"><a href="#2-参数传递的完整流程" class="headerlink" title="2. 参数传递的完整流程"></a>2. 参数传递的完整流程</h3><p>当用户调用代理合约时：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs stylus">用户调用: proxy<span class="hljs-selector-class">.setValue</span>(<span class="hljs-number">42</span>, <span class="hljs-string">&quot;hello&quot;</span>, someAddress)<br>                ↓<br>calldata: <span class="hljs-selector-attr">[函数选择器]</span><span class="hljs-selector-attr">[参数1: 42]</span><span class="hljs-selector-attr">[参数2: <span class="hljs-string">&quot;hello&quot;</span>]</span><span class="hljs-selector-attr">[参数3: someAddress]</span><br>                ↓<br>代理合约fallback函数捕获所有calldata<br>                ↓<br>通过delegatecall将完整calldata转发给逻辑合约<br>                ↓<br>逻辑合约的<span class="hljs-built_in">setValue</span>(<span class="hljs-number">42</span>, <span class="hljs-string">&quot;hello&quot;</span>, someAddress)被执行<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-实际测试示例"><a href="#3-实际测试示例" class="headerlink" title="3. 实际测试示例"></a>3. 实际测试示例</h3><p>让我们创建一个更复杂的逻辑合约来验证参数传递：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// 复杂参数测试的逻辑合约<br>contract ComplexLogic &#123;<br>    uint256 private _value;<br>    string private _text;<br>    address private _target;<br>    <br>    event ComplexCall(uint256 number, string text, address addr, bool flag);<br>    <br>    function setComplexValue(<br>        uint256 number, <br>        string memory text, <br>        address addr, <br>        bool flag<br>    ) external &#123;<br>        _value = number;<br>        _text = text;<br>        _target = addr;<br>        <br>        emit ComplexCall(number, text, addr, flag);<br>    &#125;<br>    <br>    function getValues() external view returns (uint256, string memory, address) &#123;<br>        return (_value, _text, _target);<br>    &#125;<br>    <br>    // 数组参数测试<br>    function processArray(uint256[] memory numbers) external pure returns (uint256) &#123;<br>        uint256 sum = 0;<br>        for (uint i = 0; i &lt; numbers.length; i++) &#123;<br>            sum += numbers[i];<br>        &#125;<br>        return sum;<br>    &#125;<br>    <br>    // 结构体参数测试<br>    struct UserData &#123;<br>        string name;<br>        uint256 age;<br>        address wallet;<br>    &#125;<br>    <br>    function processStruct(UserData memory data) external pure returns (string memory) &#123;<br>        return string(abi.encodePacked(data.name, &quot; - &quot;, Strings.toString(data.age)));<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="4-完整的参数传递测试"><a href="#4-完整的参数传递测试" class="headerlink" title="4. 完整的参数传递测试"></a>4. 完整的参数传递测试</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> &#123; ethers &#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;hardhat&quot;</span>);<br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">testParameterPassing</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">const</span> [admin, user] = <span class="hljs-keyword">await</span> ethers.<span class="hljs-title function_">getSigners</span>();<br>    <br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;=== 透明代理参数传递测试 ===&quot;</span>);<br>    <br>    <span class="hljs-comment">// 部署逻辑合约</span><br>    <span class="hljs-keyword">const</span> <span class="hljs-title class_">ComplexLogic</span> = <span class="hljs-keyword">await</span> ethers.<span class="hljs-title function_">getContractFactory</span>(<span class="hljs-string">&quot;ComplexLogic&quot;</span>);<br>    <span class="hljs-keyword">const</span> logic = <span class="hljs-keyword">await</span> <span class="hljs-title class_">ComplexLogic</span>.<span class="hljs-title function_">deploy</span>();<br>    <span class="hljs-keyword">await</span> logic.<span class="hljs-title function_">deployed</span>();<br>    <br>    <span class="hljs-comment">// 部署代理合约</span><br>    <span class="hljs-keyword">const</span> <span class="hljs-title class_">TransparentProxy</span> = <span class="hljs-keyword">await</span> ethers.<span class="hljs-title function_">getContractFactory</span>(<span class="hljs-string">&quot;TransparentProxy&quot;</span>);<br>    <span class="hljs-keyword">const</span> proxy = <span class="hljs-keyword">await</span> <span class="hljs-title class_">TransparentProxy</span>.<span class="hljs-title function_">deploy</span>(logic.<span class="hljs-property">address</span>, admin.<span class="hljs-property">address</span>);<br>    <span class="hljs-keyword">await</span> proxy.<span class="hljs-title function_">deployed</span>();<br>    <br>    <span class="hljs-comment">// 通过代理访问逻辑合约</span><br>    <span class="hljs-keyword">const</span> proxyAsLogic = <span class="hljs-keyword">await</span> ethers.<span class="hljs-title function_">getContractAt</span>(<span class="hljs-string">&quot;ComplexLogic&quot;</span>, proxy.<span class="hljs-property">address</span>);<br>    <br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;1. 测试基本类型参数...&quot;</span>);<br>    <span class="hljs-keyword">const</span> tx = <span class="hljs-keyword">await</span> proxyAsLogic.<span class="hljs-title function_">setComplexValue</span>(<br>        <span class="hljs-number">12345</span>, <br>        <span class="hljs-string">&quot;Hello Proxy&quot;</span>, <br>        user.<span class="hljs-property">address</span>, <br>        <span class="hljs-literal">true</span><br>    );<br>    <br>    <span class="hljs-keyword">const</span> receipt = <span class="hljs-keyword">await</span> tx.<span class="hljs-title function_">wait</span>();<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;✓ 事件日志:&quot;</span>, receipt.<span class="hljs-property">events</span>[<span class="hljs-number">0</span>].<span class="hljs-property">args</span>);<br>    <br>    <span class="hljs-comment">// 验证数据是否正确存储</span><br>    <span class="hljs-keyword">const</span> [value, text, addr] = <span class="hljs-keyword">await</span> proxyAsLogic.<span class="hljs-title function_">getValues</span>();<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;✓ 存储的值:&quot;</span>, value.<span class="hljs-title function_">toString</span>(), text, addr);<br>    <br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;2. 测试数组参数...&quot;</span>);<br>    <span class="hljs-keyword">const</span> numbers = [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>];<br>    <span class="hljs-keyword">const</span> sum = <span class="hljs-keyword">await</span> proxyAsLogic.<span class="hljs-title function_">processArray</span>(numbers);<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;✓ 数组求和结果:&quot;</span>, sum.<span class="hljs-title function_">toString</span>());<br>    <br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;3. 测试结构体参数...&quot;</span>);<br>    <span class="hljs-keyword">const</span> userData = &#123;<br>        <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Alice&quot;</span>,<br>        <span class="hljs-attr">age</span>: <span class="hljs-number">25</span>,<br>        <span class="hljs-attr">wallet</span>: user.<span class="hljs-property">address</span><br>    &#125;;<br>    <br>    <span class="hljs-comment">// 注意：需要以数组形式传递结构体</span><br>    <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> proxyAsLogic.<span class="hljs-title function_">processStruct</span>(userData);<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;✓ 结构体处理结果:&quot;</span>, result);<br>    <br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;4. 测试带ETH的调用...&quot;</span>);<br>    <span class="hljs-keyword">const</span> txWithValue = <span class="hljs-keyword">await</span> proxyAsLogic.<span class="hljs-title function_">setComplexValue</span>(<br>        <span class="hljs-number">999</span>, <br>        <span class="hljs-string">&quot;With ETH&quot;</span>, <br>        user.<span class="hljs-property">address</span>, <br>        <span class="hljs-literal">false</span>,<br>        &#123; <span class="hljs-attr">value</span>: ethers.<span class="hljs-property">utils</span>.<span class="hljs-title function_">parseEther</span>(<span class="hljs-string">&quot;0.1&quot;</span>) &#125; <span class="hljs-comment">// 发送ETH</span><br>    );<br>    <span class="hljs-keyword">await</span> txWithValue.<span class="hljs-title function_">wait</span>();<br>    <br>    <span class="hljs-comment">// 检查代理合约余额</span><br>    <span class="hljs-keyword">const</span> proxyBalance = <span class="hljs-keyword">await</span> ethers.<span class="hljs-property">provider</span>.<span class="hljs-title function_">getBalance</span>(proxy.<span class="hljs-property">address</span>);<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;✓ 代理合约余额:&quot;</span>, ethers.<span class="hljs-property">utils</span>.<span class="hljs-title function_">formatEther</span>(proxyBalance), <span class="hljs-string">&quot;ETH&quot;</span>);<br>    <br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;5. 测试复杂嵌套调用...&quot;</span>);<br>    <span class="hljs-comment">// 模拟一个复杂的DeFi操作</span><br>    <span class="hljs-keyword">const</span> complexTx = <span class="hljs-keyword">await</span> proxyAsLogic.<span class="hljs-title function_">setComplexValue</span>(<br>        <span class="hljs-keyword">await</span> ethers.<span class="hljs-property">provider</span>.<span class="hljs-title function_">getBlockNumber</span>(), <span class="hljs-comment">// 当前区块号</span><br>        <span class="hljs-string">`TxHash: <span class="hljs-subst">$&#123;txWithValue.hash.substring(<span class="hljs-number">0</span>, <span class="hljs-number">10</span>)&#125;</span>...`</span>,<br>        admin.<span class="hljs-property">address</span>,<br>        <span class="hljs-literal">true</span><br>    );<br>    <span class="hljs-keyword">await</span> complexTx.<span class="hljs-title function_">wait</span>();<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;✓ 复杂调用完成&quot;</span>);<br>&#125;<br><br><span class="hljs-title function_">testParameterPassing</span>().<span class="hljs-title function_">catch</span>(<span class="hljs-variable language_">console</span>.<span class="hljs-property">error</span>);<br></code></pre></td></tr></table></figure>
+
+<h3 id="5-底层原理详解"><a href="#5-底层原理详解" class="headerlink" title="5. 底层原理详解"></a>5. 底层原理详解</h3><h4 id="Calldata-的结构："><a href="#Calldata-的结构：" class="headerlink" title="Calldata 的结构："></a>Calldata 的结构：</h4><figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs gcode">┌─────────────────┬────────────────┬────────────────┬────────────────┐<br>│ 函数选择器<span class="hljs-comment">(4字节)</span> │ 参数<span class="hljs-number">1</span><span class="hljs-comment">(32字节)</span>  │ 参数<span class="hljs-number">2</span><span class="hljs-comment">(32字节)</span>  │ 参数<span class="hljs-number">3</span><span class="hljs-comment">(32字节)</span>  │<br>└─────────────────┴────────────────┴────────────────┴────────────────┘<br></code></pre></td></tr></table></figure>
+
+<h4 id="汇编指令的作用："><a href="#汇编指令的作用：" class="headerlink" title="汇编指令的作用："></a>汇编指令的作用：</h4><ul>
+<li><p><strong><code>calldatacopy(0, 0, calldatasize())</code></strong></p>
+<ul>
+<li>将调用数据从calldata复制到内存</li>
+<li><code>0, 0</code>：目标内存位置和源calldata位置</li>
+<li><code>calldatasize()</code>：要复制的数据大小</li>
+</ul>
+</li>
+<li><p><strong><code>delegatecall(gas(), impl, 0, calldatasize(), 0, 0)</code></strong></p>
+<ul>
+<li><code>gas()</code>：转发所有可用gas</li>
+<li><code>impl</code>：逻辑合约地址</li>
+<li><code>0</code>：输入数据在内存中的位置</li>
+<li><code>calldatasize()</code>：输入数据大小</li>
+<li><code>0, 0</code>：输出数据位置和大小（暂时为0）</li>
+</ul>
+</li>
+</ul>
+<h3 id="6-实际应用场景"><a href="#6-实际应用场景" class="headerlink" title="6. 实际应用场景"></a>6. 实际应用场景</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// 在真实的DeFi应用中，参数传递可能像这样：<br><br>// 用户调用（通过代理）<br>await proxyContract.swapExactTokensForETH(<br>    amountIn,          // uint<br>    amountOutMin,      // uint  <br>    path,              // address[] <br>    to,                // address<br>    deadline           // uint<br>);<br><br>// 代理合约透明地将所有参数转发给Uniswap路由逻辑<br></code></pre></td></tr></table></figure>
+
+<h3 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h3><p><strong>透明代理完美地处理了参数传递：</strong></p>
+<ol>
+<li><strong>自动传递</strong>：所有调用参数通过 <code>calldatacopy</code> 和 <code>delegatecall</code> 自动转发</li>
+<li><strong>完整保留</strong>：参数类型、顺序、值都完全保持不变</li>
+<li><strong>支持复杂类型</strong>：包括数组、结构体、嵌套数据等</li>
+<li><strong>ETH传递</strong>：配合 <code>payable</code> 可以同时传递以太币</li>
+<li><strong>返回值处理</strong>：逻辑合约的返回值通过 <code>returndatacopy</code> 返回给原始调用者</li>
+</ol>
+<p><strong>用户完全不需要关心代理机制</strong>，就像直接调用逻辑合约一样使用所有功能，这正是”透明”代理名称的由来。</p>
+<blockquote>
+<p>虽然通过<code>delegatecall</code>的方式将外部对代理合约的调用全部转接到远程合约上，省去了部署一次合约的开销，但是它存在以下问题：</p>
+<ul>
+<li>代理合约只拷贝了远程合约的runtime code，由于涉及初始化部分的代码在init code中，故代理合约无法拷贝远程合约的构造函数内的内容，需要一个额外的initialize 函数来初始化代理合约的状态值。</li>
+<li><code>delegatecall</code>只能调用public 或者 external的方法，对于其internal 和 private 方法无法调用。所以代理合约相当于只拷贝了远程合约的公开的方法。</li>
+</ul>
+</blockquote>
+<blockquote>
+<p>代理让合约保持一个公共地址，同时在幕后交换逻辑。透明代理 (EIP-1967) 通过 <code>delegatecall</code> 将用户调用路由到一个实现，将所有状态保存在代理中，并公开一个单独的管理平面用于升级。你展示了三个标准插槽（实现&#x2F;管理&#x2F;信标），为什么构造函数不起作用（使用 <code>initialize</code>），以及一个完整的 Foundry 演练：部署 V1，使用 init calldata 部署代理，通过代理读取&#x2F;写入，检查插槽，然后升级到 V2 并确认状态连续性。</p>
+</blockquote>
+<p>在智能合约架构中，”上下文构建”是一个重要的设计概念，它指的是<strong>在合约执行过程中，有意识地构建和管理执行上下文环境，确保状态的一致性、安全性和可预测性</strong>。</p>
+<h2 id="核心概念"><a href="#核心概念" class="headerlink" title="核心概念"></a>核心概念</h2><p>上下文构建关注的是：<strong>在哪个环境中、以什么身份、在什么状态下执行合约逻辑</strong>。</p>
+<h2 id="具体表现形式"><a href="#具体表现形式" class="headerlink" title="具体表现形式"></a>具体表现形式</h2><h3 id="1-执行上下文明确化"><a href="#1-执行上下文明确化" class="headerlink" title="1. 执行上下文明确化"></a>1. 执行上下文明确化</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract ContextAwareContract &#123;<br>    // 传统方式 - 上下文隐式传递<br>    function doSomething() external &#123;<br>        // 直接使用 msg.sender, msg.value<br>        transfer(msg.sender, msg.value);<br>    &#125;<br>    <br>    // 上下文构建方式 - 显式构建执行环境<br>    function doSomethingWithContext() external &#123;<br>        // 构建明确的执行上下文<br>        ExecutionContext memory context = ExecutionContext(&#123;<br>            caller: msg.sender,<br>            value: msg.value,<br>            timestamp: block.timestamp,<br>            gasLeft: gasleft()<br>        &#125;);<br>        <br>        // 在明确的上下文中执行逻辑<br>        _executeWithContext(context);<br>    &#125;<br>    <br>    function _executeWithContext(ExecutionContext memory context) internal &#123;<br>        // 所有逻辑都在明确的上下文中执行<br>        require(context.caller != address(0), &quot;Invalid caller&quot;);<br>        require(context.value &gt; 0, &quot;Value required&quot;);<br>        <br>        // 使用上下文而非直接使用全局变量<br>        _processTransfer(context.caller, context.value);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-权限上下文构建"><a href="#2-权限上下文构建" class="headerlink" title="2. 权限上下文构建"></a>2. 权限上下文构建</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract RoleBasedContext &#123;<br>    struct AuthContext &#123;<br>        address caller;<br>        bytes32 role;<br>        uint256 permissions;<br>        bool isAdmin;<br>    &#125;<br>    <br>    mapping(address =&gt; bytes32) public userRoles;<br>    <br>    // 构建认证上下文<br>    function _buildAuthContext(address user) internal view returns (AuthContext memory) &#123;<br>        bytes32 role = userRoles[user];<br>        <br>        return AuthContext(&#123;<br>            caller: user,<br>            role: role,<br>            permissions: _getPermissions(role),<br>            isAdmin: role == keccak256(&quot;ADMIN&quot;)<br>        &#125;);<br>    &#125;<br>    <br>    function sensitiveOperation() external &#123;<br>        // 构建权限上下文<br>        AuthContext memory auth = _buildAuthContext(msg.sender);<br>        <br>        // 在明确的权限上下文中执行<br>        require(auth.isAdmin, &quot;Admin role required&quot;);<br>        _executeSensitiveOperation(auth);<br>    &#125;<br>    <br>    function _executeSensitiveOperation(AuthContext memory auth) internal &#123;<br>        // 操作逻辑，拥有完整的权限上下文<br>        emit OperationExecuted(auth.caller, auth.role, block.timestamp);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-交易上下文构建"><a href="#3-交易上下文构建" class="headerlink" title="3. 交易上下文构建"></a>3. 交易上下文构建</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract TransactionContext &#123;<br>    struct TxContext &#123;<br>        address origin;         // tx.origin<br>        address sender;         // msg.sender<br>        uint256 value;          // msg.value<br>        uint256 gasPrice;       // tx.gasprice<br>        uint256 blockNumber;    // block.number<br>        uint256 timestamp;      // block.timestamp<br>    &#125;<br>    <br>    function _buildTxContext() internal view returns (TxContext memory) &#123;<br>        return TxContext(&#123;<br>            origin: tx.origin,<br>            sender: msg.sender,<br>            value: msg.value,<br>            gasPrice: tx.gasprice,<br>            blockNumber: block.number,<br>            timestamp: block.timestamp<br>        &#125;);<br>    &#125;<br>    <br>    function processTransaction() external payable &#123;<br>        TxContext memory ctx = _buildTxContext();<br>        <br>        // 基于完整交易上下文进行验证<br>        _validateTransaction(ctx);<br>        _executeBusinessLogic(ctx);<br>    &#125;<br>    <br>    function _validateTransaction(TxContext memory ctx) internal pure &#123;<br>        require(ctx.sender != address(0), &quot;Invalid sender&quot;);<br>        require(ctx.value &gt; 0, &quot;Transaction value required&quot;);<br>        // 更多的上下文验证...<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="实际应用场景"><a href="#实际应用场景" class="headerlink" title="实际应用场景"></a>实际应用场景</h2><h3 id="场景1：DeFi协议中的上下文构建"><a href="#场景1：DeFi协议中的上下文构建" class="headerlink" title="场景1：DeFi协议中的上下文构建"></a>场景1：DeFi协议中的上下文构建</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract DefiProtocol &#123;<br>    struct TradingContext &#123;<br>        address trader;<br>        uint256 inputAmount;<br>        uint256 minOutputAmount;<br>        address inputToken;<br>        address outputToken;<br>        uint256 deadline;<br>        uint256 slippageTolerance;<br>    &#125;<br>    <br>    function swapWithContext(<br>        uint256 inputAmount,<br>        uint256 minOutputAmount,<br>        address inputToken,<br>        address outputToken,<br>        uint256 deadline,<br>        uint256 slippageTolerance<br>    ) external &#123;<br>        // 构建完整的交易上下文<br>        TradingContext memory context = TradingContext(&#123;<br>            trader: msg.sender,<br>            inputAmount: inputAmount,<br>            minOutputAmount: minOutputAmount,<br>            inputToken: inputToken,<br>            outputToken: outputToken,<br>            deadline: deadline,<br>            slippageTolerance: slippageTolerance<br>        &#125;);<br>        <br>        // 验证交易上下文<br>        _validateTradingContext(context);<br>        <br>        // 在明确上下文中执行交换<br>        _executeSwapInContext(context);<br>    &#125;<br>    <br>    function _validateTradingContext(TradingContext memory ctx) internal view &#123;<br>        require(ctx.deadline &gt;= block.timestamp, &quot;Transaction expired&quot;);<br>        require(ctx.inputAmount &gt; 0, &quot;Invalid input amount&quot;);<br>        require(ctx.inputToken != ctx.outputToken, &quot;Same token&quot;);<br>        require(ctx.slippageTolerance &lt;= 500, &quot;Slippage too high&quot;); // 5% max<br>    &#125;<br>    <br>    function _executeSwapInContext(TradingContext memory ctx) internal &#123;<br>        // 转移输入代币<br>        IERC20(ctx.inputToken).transferFrom(ctx.trader, address(this), ctx.inputAmount);<br>        <br>        // 计算输出数量（考虑滑点）<br>        uint256 outputAmount = _calculateOutputAmount(ctx);<br>        require(outputAmount &gt;= ctx.minOutputAmount, &quot;Slippage exceeded&quot;);<br>        <br>        // 转移输出代币<br>        IERC20(ctx.outputToken).transfer(ctx.trader, outputAmount);<br>        <br>        emit SwapExecuted(<br>            ctx.trader,<br>            ctx.inputToken,<br>            ctx.outputToken,<br>            ctx.inputAmount,<br>            outputAmount<br>        );<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="场景2：治理合约中的投票上下文"><a href="#场景2：治理合约中的投票上下文" class="headerlink" title="场景2：治理合约中的投票上下文"></a>场景2：治理合约中的投票上下文</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract GovernanceWithContext &#123;<br>    struct VotingContext &#123;<br>        address voter;<br>        uint256 proposalId;<br>        uint256 votingPower;<br>        uint256 voteWeight;<br>        bool hasVoted;<br>        uint256 voteTime;<br>    &#125;<br>    <br>    function voteWithContext(uint256 proposalId, bool support) external &#123;<br>        // 构建投票上下文<br>        VotingContext memory context = _buildVotingContext(proposalId);<br>        <br>        // 在上下文中执行投票<br>        _executeVoteInContext(context, support);<br>    &#125;<br>    <br>    function _buildVotingContext(uint256 proposalId) internal view returns (VotingContext memory) &#123;<br>        uint256 votingPower = getVotingPower(msg.sender);<br>        bool hasVoted = hasVotedOnProposal(msg.sender, proposalId);<br>        <br>        return VotingContext(&#123;<br>            voter: msg.sender,<br>            proposalId: proposalId,<br>            votingPower: votingPower,<br>            voteWeight: _calculateVoteWeight(votingPower),<br>            hasVoted: hasVoted,<br>            voteTime: block.timestamp<br>        &#125;);<br>    &#125;<br>    <br>    function _executeVoteInContext(VotingContext memory ctx, bool support) internal &#123;<br>        require(!ctx.hasVoted, &quot;Already voted&quot;);<br>        require(ctx.votingPower &gt; 0, &quot;No voting power&quot;);<br>        require(ctx.voteTime &lt;= proposals[ctx.proposalId].endTime, &quot;Voting ended&quot;);<br>        <br>        // 执行投票逻辑<br>        proposals[ctx.proposalId].totalVotes += ctx.voteWeight;<br>        if (support) &#123;<br>            proposals[ctx.proposalId].forVotes += ctx.voteWeight;<br>        &#125; else &#123;<br>            proposals[ctx.proposalId].againstVotes += ctx.voteWeight;<br>        &#125;<br>        <br>        voted[ctx.voter][ctx.proposalId] = true;<br>        <br>        emit Voted(ctx.voter, ctx.proposalId, support, ctx.voteWeight);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="上下文构建的优势"><a href="#上下文构建的优势" class="headerlink" title="上下文构建的优势"></a>上下文构建的优势</h2><h3 id="1-提高可测试性"><a href="#1-提高可测试性" class="headerlink" title="1. 提高可测试性"></a>1. 提高可测试性</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// 可以轻松模拟不同上下文进行测试<br>function testDifferentContexts() public &#123;<br>    // 测试管理员上下文<br>    AuthContext memory adminContext = AuthContext(&#123;<br>        caller: admin,<br>        role: keccak256(&quot;ADMIN&quot;),<br>        permissions: ALL_PERMISSIONS,<br>        isAdmin: true<br>    &#125;);<br>    <br>    // 测试用户上下文<br>    AuthContext memory userContext = AuthContext(&#123;<br>        caller: user,<br>        role: keccak256(&quot;USER&quot;), <br>        permissions: BASIC_PERMISSIONS,<br>        isAdmin: false<br>    &#125;);<br>    <br>    // 分别测试不同上下文下的行为<br>    _testOperationWithContext(adminContext);<br>    _testOperationWithContext(userContext);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-增强安全性"><a href="#2-增强安全性" class="headerlink" title="2. 增强安全性"></a>2. 增强安全性</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract SecureContext &#123;<br>    struct SecurityContext &#123;<br>        address caller;<br>        bool isContract;<br>        uint256 balance;<br>        uint256 callDepth;<br>    &#125;<br>    <br>    function _buildSecurityContext() internal returns (SecurityContext memory) &#123;<br>        return SecurityContext(&#123;<br>            caller: msg.sender,<br>            isContract: _isContract(msg.sender),<br>            balance: address(this).balance,<br>            callDepth: _getCallDepth()<br>        &#125;);<br>    &#125;<br>    <br>    function secureFunction() external &#123;<br>        SecurityContext memory secCtx = _buildSecurityContext();<br>        <br>        // 安全验证<br>        require(!secCtx.isContract, &quot;Contracts not allowed&quot;);<br>        require(secCtx.callDepth == 0, &quot;Reentrancy detected&quot;);<br>        require(secCtx.balance &gt; 0, &quot;Insufficient contract balance&quot;);<br>        <br>        _executeSecureOperation(secCtx);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-改善代码可维护性"><a href="#3-改善代码可维护性" class="headerlink" title="3. 改善代码可维护性"></a>3. 改善代码可维护性</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract MaintainableContract &#123;<br>    // 明确的上下文使得逻辑更清晰<br>    function complexBusinessLogic(params) external &#123;<br>        BusinessContext memory bizCtx = _buildBusinessContext(params);<br>        ValidationContext memory valCtx = _buildValidationContext(bizCtx);<br>        ExecutionContext memory exeCtx = _buildExecutionContext(valCtx);<br>        <br>        // 每个步骤都有明确的上下文<br>        _validateInContext(valCtx);<br>        _executeInContext(exeCtx);<br>        _emitEventsInContext(bizCtx);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="总结-2"><a href="#总结-2" class="headerlink" title="总结"></a>总结</h2><p><strong>智能合约中的上下文构建本质上是：</strong></p>
+<ol>
+<li><strong>显式化执行环境</strong> - 将隐式的全局变量转化为显式的上下文对象</li>
+<li><strong>统一验证入口</strong> - 在明确的上下文中进行集中验证</li>
+<li><strong>隔离业务逻辑</strong> - 业务逻辑在受控的上下文中执行</li>
+<li><strong>增强可测试性</strong> - 可以轻松模拟各种执行场景</li>
+<li><strong>提高安全性</strong> - 在统一的上下文中进行安全检查</li>
+</ol>
+<p>这种模式使得智能合约更加<strong>结构化、可预测和可维护</strong>，特别适合复杂的DeFi协议和治理系统。</p>
+<h2 id="核心类比：智能合约-≈-云端API服务"><a href="#核心类比：智能合约-≈-云端API服务" class="headerlink" title="核心类比：智能合约 ≈ 云端API服务"></a>核心类比：智能合约 ≈ 云端API服务</h2><h3 id="基本类比关系"><a href="#基本类比关系" class="headerlink" title="基本类比关系"></a>基本类比关系</h3><table>
+<thead>
+<tr>
+<th align="left">智能合约世界</th>
+<th align="left">传统计算机世界</th>
+<th align="left">类比说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">合约部署到区块链</td>
+<td align="left">程序部署到服务器</td>
+<td align="left">都是将代码放到远程执行环境</td>
+</tr>
+<tr>
+<td align="left">用户调用合约函数</td>
+<td align="left">用户调用API接口</td>
+<td align="left">都是远程过程调用</td>
+</tr>
+<tr>
+<td align="left">交易&#x2F;调用</td>
+<td align="left">HTTP请求</td>
+<td align="left">都是执行请求</td>
+</tr>
+<tr>
+<td align="left">Gas费用</td>
+<td align="left">云计算费用</td>
+<td align="left">都是按执行资源付费</td>
+</tr>
+<tr>
+<td align="left">区块链状态</td>
+<td align="left">数据库状态</td>
+<td align="left">都是持久化存储</td>
+</tr>
+</tbody></table>
+<p>参考：</p>
+<p><a target="_blank" rel="noopener" href="https://hot.dawoai.com/posts/2025/solidity-contract-security-design-patterns">Solidity合约八大安全设计模式精解 - Dawoai</a></p>
+<p><a target="_blank" rel="noopener" href="https://cloud.tencent.cn/developer/article/2401845">设计模式：智能合约的经典设计模式及解析-腾讯云开发者社区-腾讯云</a></p>
+<p><a target="_blank" rel="noopener" href="https://learnblockchain.cn/article/790">以太坊生态中的智能合约设计模式（一） | 登链社区 | 区块链技术社区</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/77492252">智能合约的设计与思考 - 知乎</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/toxotguo/thinking/blob/master/%E6%B5%85%E8%B0%88%E4%BB%A5%E5%A4%AA%E5%9D%8A%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B8%8E%E5%8D%87%E7%BA%A7%E6%96%B9%E6%B3%95.md">thinking&#x2F;浅谈以太坊智能合约的设计模式与升级方法.md at master · toxotguo&#x2F;thinking</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.bookstack.cn/read/fisco-bcos-v1.3/d7dccfb97152e12d.md">技术分析 - 浅谈以太坊智能合约的设计模式与升级方法 - 《FISCO BCOS v1.3 使用手册》 - 书栈网 · BookStack</a></p>
+<p><a target="_blank" rel="noopener" href="https://learnblockchain.cn/article/7249">learnblockchain.cn&#x2F;article&#x2F;7249</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%8C%BA%E5%9D%97%E9%93%BE%E6%8A%80%E6%9C%AF%E4%B8%8E%E5%BA%94%E7%94%A8/" class="category-chain-item">区块链技术与应用</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%8C%BA%E5%9D%97%E9%93%BE%E6%8A%80%E6%9C%AF%E4%B8%8E%E5%BA%94%E7%94%A8/DAPP%E5%BC%80%E5%8F%91/" class="category-chain-item">DAPP开发</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%8C%BA%E5%9D%97%E9%93%BE%E6%8A%80%E6%9C%AF%E4%B8%8E%E5%BA%94%E7%94%A8/DAPP%E5%BC%80%E5%8F%91/%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91/" class="category-chain-item">合约开发</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%8C%BA%E5%9D%97%E9%93%BE%E6%8A%80%E6%9C%AF%E4%B8%8E%E5%BA%94%E7%94%A8/DAPP%E5%BC%80%E5%8F%91/%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91/Ethereum/" class="category-chain-item">Ethereum</a>
+  
+  
+
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>设计模式</div>
+      <div>http://example.com/2025/11/21/区块链技术与应用/DAPP开发/合约开发/Ethereum/设计模式/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Ling</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年11月21日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/11/21/%E5%8C%BA%E5%9D%97%E9%93%BE%E6%8A%80%E6%9C%AF%E4%B8%8E%E5%BA%94%E7%94%A8/%E5%AE%89%E5%85%A8%E5%AE%A1%E8%AE%A1/Solana/%E6%94%BB%E5%87%BB/" title="攻击">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">攻击</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/11/14/%E8%BD%AF%E4%BB%B6%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/Web%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/JSVMP%E6%B7%B7%E6%B7%86/" title="JSVMP混淆">
+                        <span class="hidden-mobile">JSVMP混淆</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
