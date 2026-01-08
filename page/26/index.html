@@ -231,6 +231,147 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
+        <a href="/2025/05/09/%E8%BD%AF%E4%BB%B6%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/Android%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/%E5%A3%B3%E5%AF%B9%E6%8A%97/%E8%84%B1%E5%A3%B3%E8%84%9A%E6%9C%AC%E8%A7%A3%E6%9E%90/Frida-dexdump%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" target="_self">
+          Frida-dexdump源码分析
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2025/05/09/%E8%BD%AF%E4%BB%B6%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/Android%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/%E5%A3%B3%E5%AF%B9%E6%8A%97/%E8%84%B1%E5%A3%B3%E8%84%9A%E6%9C%AC%E8%A7%A3%E6%9E%90/Frida-dexdump%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" target="_self">
+        <div>
+          在开始之前，建议补充Dex文件和加载相关基础知识： DEX文件解析器编写 - The Peak Tower Dex加载流程 - The Peak Tower 接着开始解析Frida_dexdump工具脚本  工具脚本目录结构 1234567891011121314151617181920frida-dexdump├─ agent│  ├─ package-lock.json│  ├─ packag
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E8%BD%AF%E4%BB%B6%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" class="category-chain-item">软件逆向工程</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E8%BD%AF%E4%BB%B6%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/Android%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/" class="category-chain-item">Android逆向分析</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E8%BD%AF%E4%BB%B6%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/Android%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/%E5%A3%B3%E5%AF%B9%E6%8A%97/" class="category-chain-item">壳对抗</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E8%BD%AF%E4%BB%B6%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/Android%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/%E5%A3%B3%E5%AF%B9%E6%8A%97/%E8%84%B1%E5%A3%B3%E8%84%9A%E6%9C%AC%E8%A7%A3%E6%9E%90/" class="category-chain-item">脱壳脚本解析</a>
+  
+  
+
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E9%80%86%E5%90%91-android/">#逆向(android)</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2025/05/09/%E8%BD%AF%E4%BB%B6%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/Android%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/%E5%A3%B3%E5%AF%B9%E6%8A%97/%E5%A3%B3%E5%8E%9F%E7%90%86/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" target="_self">
+          基础知识
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2025/05/09/%E8%BD%AF%E4%BB%B6%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/Android%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/%E5%A3%B3%E5%AF%B9%E6%8A%97/%E5%A3%B3%E5%8E%9F%E7%90%86/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" target="_self">
+        <div>
+          Java的反射机制 Java反射机制是指在程序运行时动态加载类并获取类的详细信息，从而可以操作类或对象的属性和方法。反射机制的核心是通过 Class 对象来实现的。当Java虚拟机（JVM）获得类的 Class 对象后，可以通过这个对象获取类的构造函数、方法、字段等信息，并且可以在运行时创建对象、调用方法或访问属性。这使得Java程序在运行时具有更高的灵活性和动态性。  可以把class文件想象成
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E8%BD%AF%E4%BB%B6%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" class="category-chain-item">软件逆向工程</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E8%BD%AF%E4%BB%B6%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/Android%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/" class="category-chain-item">Android逆向分析</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E8%BD%AF%E4%BB%B6%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/Android%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/%E5%A3%B3%E5%AF%B9%E6%8A%97/" class="category-chain-item">壳对抗</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E8%BD%AF%E4%BB%B6%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/Android%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/%E5%A3%B3%E5%AF%B9%E6%8A%97/%E5%A3%B3%E5%8E%9F%E7%90%86/" class="category-chain-item">壳原理</a>
+  
+  
+
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
         <a href="/2025/05/09/%E8%BD%AF%E4%BB%B6%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/Android%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/%E5%A3%B3%E5%AF%B9%E6%8A%97/%E5%A3%B3%E5%8E%9F%E7%90%86/%E6%95%B4%E4%BD%93-%E8%90%BD%E5%9C%B0%E5%8A%A0%E8%BD%BD%E5%A3%B3%E5%AE%9E%E7%8E%B0/" target="_self">
           整体-落地加载壳实现
         </a>
@@ -747,140 +888,6 @@
     <span>></span>
     
   <a href="/categories/%E5%85%A8%E6%A0%88%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/%E5%AE%A2%E6%88%B7%E7%AB%AF/Android%E5%BC%80%E5%8F%91/%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6/" class="category-chain-item">四大组件</a>
-  
-  
-
-  
-
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2025/05/09/%E5%85%A8%E6%A0%88%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/%E5%AE%A2%E6%88%B7%E7%AB%AF/Android%E5%BC%80%E5%8F%91/View%E6%9C%BA%E5%88%B6/%E5%85%B6%E4%BB%96/" target="_self">
-          其他
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2025/05/09/%E5%85%A8%E6%A0%88%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/%E5%AE%A2%E6%88%B7%E7%AB%AF/Android%E5%BC%80%E5%8F%91/View%E6%9C%BA%E5%88%B6/%E5%85%B6%E4%BB%96/" target="_self">
-        <div>
-          Android的DrawabIe第6章 Android的Drawable · Android开发艺术探索 · 看云 详解Android 13种 Drawable的使用方法_android drawable-CSDN博客 8.1.1 Android中的13种Drawable小结 Part 1 | 菜鸟教程 Android 动画Android动画深入分析-腾讯云开发者社区-腾讯云 《Android开发
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/%E5%85%A8%E6%A0%88%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/" class="category-chain-item">全栈应用开发</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/%E5%85%A8%E6%A0%88%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/%E5%AE%A2%E6%88%B7%E7%AB%AF/" class="category-chain-item">客户端</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/%E5%85%A8%E6%A0%88%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/%E5%AE%A2%E6%88%B7%E7%AB%AF/Android%E5%BC%80%E5%8F%91/" class="category-chain-item">Android开发</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/%E5%85%A8%E6%A0%88%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/%E5%AE%A2%E6%88%B7%E7%AB%AF/Android%E5%BC%80%E5%8F%91/View%E6%9C%BA%E5%88%B6/" class="category-chain-item">View机制</a>
-  
-  
-
-  
-
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2025/05/09/%E5%85%A8%E6%A0%88%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/%E5%AE%A2%E6%88%B7%E7%AB%AF/Android%E5%BC%80%E5%8F%91/View%E6%9C%BA%E5%88%B6/View%E7%9A%84%E4%BA%8B%E4%BB%B6%E4%BD%93%E7%B3%BB/" target="_self">
-          View的事件体系
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2025/05/09/%E5%85%A8%E6%A0%88%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/%E5%AE%A2%E6%88%B7%E7%AB%AF/Android%E5%BC%80%E5%8F%91/View%E6%9C%BA%E5%88%B6/View%E7%9A%84%E4%BA%8B%E4%BB%B6%E4%BD%93%E7%B3%BB/" target="_self">
-        <div>
-          UI开发与常用控件第一行代码第三版——第四章：UI 开发的点点滴滴 - Android技术学习 - SegmentFault 思否 《第一行代码：Android篇》学习笔记（四） View基础知识什么是View?View是Android中所有控件的基类，代表界面层的控件抽象。ViewGroup是View的子类，用于包含多个控件，形成控件组。 继承关系：ViewGroup继承自View，因此View
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/%E5%85%A8%E6%A0%88%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/" class="category-chain-item">全栈应用开发</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/%E5%85%A8%E6%A0%88%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/%E5%AE%A2%E6%88%B7%E7%AB%AF/" class="category-chain-item">客户端</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/%E5%85%A8%E6%A0%88%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/%E5%AE%A2%E6%88%B7%E7%AB%AF/Android%E5%BC%80%E5%8F%91/" class="category-chain-item">Android开发</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/%E5%85%A8%E6%A0%88%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/%E5%AE%A2%E6%88%B7%E7%AB%AF/Android%E5%BC%80%E5%8F%91/View%E6%9C%BA%E5%88%B6/" class="category-chain-item">View机制</a>
   
   
 

@@ -231,6 +231,119 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
+        <a href="/2025/10/16/%E9%AB%98%E6%80%A7%E8%83%BD%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91/%E9%AB%98%E5%B9%B6%E5%8F%91%E4%BC%98%E5%8C%96/%E7%BA%BF%E7%A8%8B%E6%B1%A0/" target="_self">
+          线程池
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2025/10/16/%E9%AB%98%E6%80%A7%E8%83%BD%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91/%E9%AB%98%E5%B9%B6%E5%8F%91%E4%BC%98%E5%8C%96/%E7%BA%BF%E7%A8%8B%E6%B1%A0/" target="_self">
+        <div>
+          在高频 &#x2F; 高并发系统中， 线程池本身绝不能成为瓶颈。 所以现代线程池的核心是：  🔸 去锁化（lock-free） 🔸 线程局部任务队列 🔸 原子操作 + 内存屏障 🔸 NUMA &#x2F; CPU 亲和性优化  在 高频交易系统 &#x2F; 低延迟框架 中， 真正的线程池通常采用以下设计：  绑定 CPU 核（pinning，每个线程独占一核）； 任务队列采用无锁环形队列
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E9%AB%98%E6%80%A7%E8%83%BD%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91/" class="category-chain-item">高性能系统开发</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E9%AB%98%E6%80%A7%E8%83%BD%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91/%E9%AB%98%E5%B9%B6%E5%8F%91%E4%BC%98%E5%8C%96/" class="category-chain-item">高并发优化</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2025/10/16/%E9%AB%98%E6%80%A7%E8%83%BD%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91/%E9%AB%98%E5%B9%B6%E5%8F%91%E4%BC%98%E5%8C%96/%E6%97%A0%E9%94%81%E7%BC%96%E7%A8%8B/RCU/" target="_self">
+          RCU
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2025/10/16/%E9%AB%98%E6%80%A7%E8%83%BD%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91/%E9%AB%98%E5%B9%B6%E5%8F%91%E4%BC%98%E5%8C%96/%E6%97%A0%E9%94%81%E7%BC%96%E7%A8%8B/RCU/" target="_self">
+        <div>
+          无锁编程—RCU - 星見遥 - 博客园 RCU（Read-Copy-Update，读-复制-更新）是一种高性能的并发数据访问机制，特别适合读多写少、低延迟要求高的场景，在 Linux 内核和高频交易系统中都很常见。它和顺序锁（Seqlock）有相似之处，但机制更适合大规模并发读取。下面我详细讲解：  1️⃣ 核心思想RCU 的核心是 “读者永不阻塞，写者通过复制修改数据，然后原子切换引用”。
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E9%AB%98%E6%80%A7%E8%83%BD%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91/" class="category-chain-item">高性能系统开发</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E9%AB%98%E6%80%A7%E8%83%BD%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91/%E9%AB%98%E5%B9%B6%E5%8F%91%E4%BC%98%E5%8C%96/" class="category-chain-item">高并发优化</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E9%AB%98%E6%80%A7%E8%83%BD%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91/%E9%AB%98%E5%B9%B6%E5%8F%91%E4%BC%98%E5%8C%96/%E6%97%A0%E9%94%81%E7%BC%96%E7%A8%8B/" class="category-chain-item">无锁编程</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
         <a href="/2025/10/16/%E9%AB%98%E6%80%A7%E8%83%BD%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91/%E9%AB%98%E5%B9%B6%E5%8F%91%E4%BC%98%E5%8C%96/%E6%97%A0%E9%94%81%E7%BC%96%E7%A8%8B/%E9%A1%BA%E5%BA%8F%E9%94%81/" target="_self">
           顺序锁
         </a>
@@ -715,133 +828,6 @@
   
   
 
-  
-
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2025/10/01/%E5%8C%BA%E5%9D%97%E9%93%BE%E6%8A%80%E6%9C%AF%E4%B8%8E%E5%BA%94%E7%94%A8/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/Ethereum/DeFi%E5%8D%8F%E8%AE%AE/Uniswap%E7%B3%BB%E5%88%97%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" target="_self">
-          Uniswap系列源码分析
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2025/10/01/%E5%8C%BA%E5%9D%97%E9%93%BE%E6%8A%80%E6%9C%AF%E4%B8%8E%E5%BA%94%E7%94%A8/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/Ethereum/DeFi%E5%8D%8F%E8%AE%AE/Uniswap%E7%B3%BB%E5%88%97%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" target="_self">
-        <div>
-          背景合约&#x2F;后端集成，优秀设计实现，代币经济学(在另外的专栏中) 做市商 做市商 - 维基百科，自由的百科全书 做市商定价理论 - MBA智库百科  “做市商制度”，和竞价交易一样，也是一种市场交易制度。做市商制度由具备一定实力、资源和信誉的机构充当“做市商”，不断向交易的买卖双方提供买卖价格，并按其提供的价格接受投资者的买卖要求，以其自有资金和证券与投资者进行交易，从而为市场提供即时性和
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/%E5%8C%BA%E5%9D%97%E9%93%BE%E6%8A%80%E6%9C%AF%E4%B8%8E%E5%BA%94%E7%94%A8/" class="category-chain-item">区块链技术与应用</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/%E5%8C%BA%E5%9D%97%E9%93%BE%E6%8A%80%E6%9C%AF%E4%B8%8E%E5%BA%94%E7%94%A8/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/" class="category-chain-item">源码阅读</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/%E5%8C%BA%E5%9D%97%E9%93%BE%E6%8A%80%E6%9C%AF%E4%B8%8E%E5%BA%94%E7%94%A8/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/Ethereum/" class="category-chain-item">Ethereum</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/%E5%8C%BA%E5%9D%97%E9%93%BE%E6%8A%80%E6%9C%AF%E4%B8%8E%E5%BA%94%E7%94%A8/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/Ethereum/DeFi%E5%8D%8F%E8%AE%AE/" class="category-chain-item">DeFi协议</a>
-  
-  
-
-  
-
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2025/09/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6%E4%B8%8E%E6%8A%80%E6%9C%AF/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/P2P%E7%BD%91%E7%BB%9C/P2P%E7%BD%91%E7%BB%9C%E6%9E%84%E5%BB%BA/" target="_self">
-          P2P网络构建
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2025/09/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6%E4%B8%8E%E6%8A%80%E6%9C%AF/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/P2P%E7%BD%91%E7%BB%9C/P2P%E7%BD%91%E7%BB%9C%E6%9E%84%E5%BB%BA/" target="_self">
-        <div>
-          Unlocking the Power of Peer-to-Peer Networks: A Comprehensive Guide to Their Features, Applications, and Future Trends Hands-On with P2P Networks: Building a Messaging System - DEV Community 深入理解P2P网络
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6%E4%B8%8E%E6%8A%80%E6%9C%AF/" class="category-chain-item">计算机科学与技术</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6%E4%B8%8E%E6%8A%80%E6%9C%AF/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" class="category-chain-item">计算机网络</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6%E4%B8%8E%E6%8A%80%E6%9C%AF/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/P2P%E7%BD%91%E7%BB%9C/" class="category-chain-item">P2P网络</a>
-  
   
 
   
