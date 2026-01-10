@@ -19,7 +19,7 @@
     <meta name="description" content="编译与链接使用Gcc编译程序时，往往会为4个步骤,分别是预处理(Prepressing)、编译 (Compilation)、汇编(Assembly)和链接(Linking)  对于编译与汇编过程在我的博客中曾多次谈到过，这里不多介绍。重点看看链接过程。 链接器的由来在并发与句柄 - The Peak Tower谈到：进程也可以理解为是一堆模块组成的,如下图可以看到一个进行需要多个dll模块支持：">
 <meta property="og:type" content="article">
 <meta property="og:title" content="静态链接">
-<meta property="og:url" content="http://example.com/2025/05/27/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6%E4%B8%8E%E6%8A%80%E6%9C%AF/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5/index.html">
+<meta property="og:url" content="http://example.com/2025/05/27/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6%E4%B8%8E%E6%8A%80%E6%9C%AF/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/Windows%E5%86%85%E6%A0%B8%E5%8E%9F%E7%90%86/%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F(%E8%A3%85%E8%BD%BD%E9%93%BE%E6%8E%A5%E8%BF%90%E8%A1%8C)/%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5/index.html">
 <meta property="og:site_name" content="The Peak Tower">
 <meta property="og:description" content="编译与链接使用Gcc编译程序时，往往会为4个步骤,分别是预处理(Prepressing)、编译 (Compilation)、汇编(Assembly)和链接(Linking)  对于编译与汇编过程在我的博客中曾多次谈到过，这里不多介绍。重点看看链接过程。 链接器的由来在并发与句柄 - The Peak Tower谈到：进程也可以理解为是一堆模块组成的,如下图可以看到一个进行需要多个dll模块支持：">
 <meta property="og:locale" content="zh_CN">
@@ -42,7 +42,7 @@
 <meta property="og:image" content="https://s2.loli.net/2025/05/27/KOjy8tvaXfZrm7g.png">
 <meta property="og:image" content="https://s2.loli.net/2025/05/27/x6FA2n4p7U9yBDR.png">
 <meta property="article:published_time" content="2025-05-27T01:34:31.982Z">
-<meta property="article:modified_time" content="2026-01-07T08:20:30.402Z">
+<meta property="article:modified_time" content="2026-01-10T09:54:11.206Z">
 <meta property="article:author" content="Ling">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://s2.loli.net/2025/05/27/8hQgmbCRZryXfPI.png">
@@ -314,7 +314,7 @@
 <p>其中无论是Window上的PE文件还是Linux上的ELF文件都在前面有进行详细的介绍：</p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://restack3.github.io/2025/04/15/%E9%80%86%E5%90%91%E4%B8%8E%E9%A3%8E%E6%8E%A7/Window%E5%B9%B3%E5%8F%B0/%E9%80%86%E5%90%91/PE%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/">PE文件格式解析 - The Peak Tower</a></li>
-<li><a target="_blank" rel="noopener" href="https://restack3.github.io/2025/05/09/%E9%80%86%E5%90%91%E4%B8%8E%E9%A3%8E%E6%8E%A7/Android%E5%B9%B3%E5%8F%B0/%E9%80%86%E5%90%91/%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F(%E8%A3%85%E8%BD%BD%E9%93%BE%E6%8E%A5%E8%BF%90%E8%A1%8C)/ELF%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E8%A7%A3%E6%9E%90/">ELF文件解析器编写 - The Peak Tower</a></li>
+<li><a target="_blank" rel="noopener" href="https://restack3.github.io/2025/05/09/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6%E4%B8%8E%E6%8A%80%E6%9C%AF/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/Andorid%E5%86%85%E6%A0%B8%E5%8E%9F%E7%90%86/%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F(%E8%A3%85%E8%BD%BD%E9%93%BE%E6%8E%A5%E8%BF%90%E8%A1%8C)/ELF%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E8%A7%A3%E6%9E%90/">ELF文件格式解析 - The Peak Tower</a></li>
 </ul>
 <p>这里简单回顾一下节和链接相关内容。</p>
 <h2 id="节"><a href="#节" class="headerlink" title="节"></a>节</h2><p>主要的几个段 Section 以及其作用</p>
@@ -773,6 +773,20 @@
   <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6%E4%B8%8E%E6%8A%80%E6%9C%AF/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" class="category-chain-item">操作系统</a>
   
   
+    <span>></span>
+    
+  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6%E4%B8%8E%E6%8A%80%E6%9C%AF/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/Windows%E5%86%85%E6%A0%B8%E5%8E%9F%E7%90%86/" class="category-chain-item">Windows内核原理</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6%E4%B8%8E%E6%8A%80%E6%9C%AF/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/Windows%E5%86%85%E6%A0%B8%E5%8E%9F%E7%90%86/%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F-%E8%A3%85%E8%BD%BD%E9%93%BE%E6%8E%A5%E8%BF%90%E8%A1%8C/" class="category-chain-item">文件格式(装载链接运行)</a>
+  
+  
+
+  
+
+  
 
   
 
@@ -793,7 +807,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>静态链接</div>
-      <div>http://example.com/2025/05/27/计算机科学与技术/操作系统/静态链接/</div>
+      <div>http://example.com/2025/05/27/计算机科学与技术/操作系统/Windows内核原理/文件格式(装载链接运行)/静态链接/</div>
     </div>
     <div class="license-meta">
       
@@ -837,7 +851,7 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2025/05/27/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6%E4%B8%8E%E6%8A%80%E6%9C%AF/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E8%A3%85%E8%BD%BD%E4%B8%8E%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5/" title="装载与动态链接">
+                      <a href="/2025/05/27/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6%E4%B8%8E%E6%8A%80%E6%9C%AF/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/Windows%E5%86%85%E6%A0%B8%E5%8E%9F%E7%90%86/%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F(%E8%A3%85%E8%BD%BD%E9%93%BE%E6%8E%A5%E8%BF%90%E8%A1%8C)/%E8%A3%85%E8%BD%BD%E4%B8%8E%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5/" title="装载与动态链接">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">装载与动态链接</span>
                         <span class="visible-mobile">上一篇</span>
