@@ -1,0 +1,882 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Ling">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="背景合约&#x2F;后端集成，优秀设计实现，代币经济学(在另外的专栏中) 做市商 做市商 - 维基百科，自由的百科全书 做市商定价理论 - MBA智库百科  “做市商制度”，和竞价交易一样，也是一种市场交易制度。做市商制度由具备一定实力、资源和信誉的机构充当“做市商”，不断向交易的买卖双方提供买卖价格，并按其提供的价格接受投资者的买卖要求，以其自有资金和证券与投资者进行交易，从而为市场提供即时性和">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Uniswap系列源码分析">
+<meta property="og:url" content="http://example.com/2025/10/01/%E5%85%A8%E6%A0%88%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/Web3%E5%BA%94%E7%94%A8/%E5%AE%89%E5%85%A8%E5%AE%A1%E8%AE%A1/DeFi%E6%BA%90%E7%A0%81/Uniswap%E7%B3%BB%E5%88%97%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="The Peak Tower">
+<meta property="og:description" content="背景合约&#x2F;后端集成，优秀设计实现，代币经济学(在另外的专栏中) 做市商 做市商 - 维基百科，自由的百科全书 做市商定价理论 - MBA智库百科  “做市商制度”，和竞价交易一样，也是一种市场交易制度。做市商制度由具备一定实力、资源和信誉的机构充当“做市商”，不断向交易的买卖双方提供买卖价格，并按其提供的价格接受投资者的买卖要求，以其自有资金和证券与投资者进行交易，从而为市场提供即时性和">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-10-01T01:39:45.706Z">
+<meta property="article:modified_time" content="2026-03-04T02:54:18.561Z">
+<meta property="article:author" content="Ling">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Uniswap系列源码分析 - The Peak Tower</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":"ture","follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"7a4M5yfyGptX0OG18qvJppXQ-gzGzoHsz","app_key":"y6dZFtA8I8Lg1KVhHbujblfB","server_url":"https://7a4m5yfy.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Uniswap系列源码分析"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          22 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Uniswap系列源码分析</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>合约&#x2F;后端集成，优秀设计实现，代币经济学(在另外的专栏中)</p>
+<h1 id="做市商"><a href="#做市商" class="headerlink" title="做市商"></a>做市商</h1><blockquote>
+<p><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E5%81%9A%E5%B8%82%E5%95%86">做市商 - 维基百科，自由的百科全书</a></p>
+<p><a target="_blank" rel="noopener" href="https://wiki.mbalib.com/wiki/%E5%81%9A%E5%B8%82%E5%95%86%E5%AE%9A%E4%BB%B7%E7%90%86%E8%AE%BA">做市商定价理论 - MBA智库百科</a></p>
+</blockquote>
+<p><strong>“做市商制度”，和竞价交易一样，也是一种市场交易制度</strong>。做市商制度由具备一定实力、资源和信誉的机构充当“做市商”，不断向交易的买卖双方提供买卖价格，并按其提供的价格接受投资者的买卖要求，以其自有资金和证券与投资者进行交易，从而为市场提供即时性和流动性，并通过买卖价差实现一定利润。</p>
+<p>换句话理解：</p>
+<blockquote>
+<p>在没有市场的地方，做市商 Make（做，创造）了一个市场出来。</p>
+</blockquote>
+<p>这里所谓的“没有市场的地方”，并非指市场不存在，而是是指交易市场的活跃度不够。市场本身是为了解决供需双方进行买卖交换的需求的，不过要想达成交易，必须要买方和卖方在同一时刻、对同一价格都有交易意愿。这件事说起来简单，不过不活跃的市场想要在同一时刻汇集起合适的买家和卖家并非易事。</p>
+<p><em>举一个简答的例子。如果说市场供需双方众多，买家 A 如果想买一个桌子，那么他随时去找到一众木匠中找到报价合适的木匠 B， 谈一个合理的价格就可以成交了，这时也不需要什么做市商。但如果交易者稀少，只有一个买家和一个木匠，那么当买家 A 一大早跑到市场上想买个东西，待了半个小时依然发现市场空无一人，买不到货。木匠 B 下午到了市场，也发现自己的桌子无人问津，只得兴尽而归。这就导致了他们虽然都有买卖的需求，但是无法成交的状况。</em></p>
+<p><em>更严重的是，如果买家 A 每天只有早上有空能到市场， 木匠 B 每天也只能下午到市场，那他们之间就永远无法实现交易。于是，机智的做市商 C 出现了。既然他知道 A 想买 B 想卖，又苦于碰不到面，那他就可以下午的时候先把木匠 B 的桌子买走，第二天早上再在市场上等着 A 出现，转手把桌子卖给 B。不过代价嘛… C 的进价很可能是 100，卖价是 110。这中间的 10 块钱的差价就是 C 的利润。</em></p>
+<p>现代意义上说的做市商，一般就是特指金融市场里面专门从事这类“二道贩子”业务的金融机构。无论你何时想买或者何时想买或者何时想卖，总有一个 C 这种的“倒爷”等着你，给你提供报价，你也随时可以找他成交。他们存在的意义，就是为了解决市场流动性不足带来的交易时间难以匹配的问题。</p>
+<p>单来说，做市商（Market Maker）的核心职责是：</p>
+<blockquote>
+<p><strong>在任何时候，为市场提供买价（Bid）和卖价（Ask），从而维持市场的流动性。</strong></p>
+</blockquote>
+<p>也就是说：</p>
+<ul>
+<li>当没人愿意买时，C 愿意买；</li>
+<li>当没人愿意卖时，C 愿意卖；</li>
+<li>他通过 <strong>买入价与卖出价之间的价差（spread）</strong> 赚取利润。</li>
+</ul>
+<p>C 提供的是“时间与对手方的匹配服务”，赚取的利润是 <strong>“流动性提供费”</strong>。</p>
+<p>如果做市商操作市场怎么办？做市与操控的区别？</p>
+<blockquote>
+<p>假设 C 买价是 100，卖价是 110；<br> 如果 C 改成卖价 200，这样做合法吗？</p>
+</blockquote>
+<p>要看市场结构：</p>
+<p>情况 1：<strong>完全竞争市场</strong></p>
+<p>如果 C 报 200，马上会被其他做市商抢走市场。买家会选择别的流动性更好的做市商。因此，这种抬价是 <strong>自杀行为</strong>，会被市场竞争淘汰。<strong>市场竞争机制本身防止了价格操控。</strong></p>
+<p>情况 2：<strong>垄断或低流动性市场</strong></p>
+<p>如果 C 是唯一做市商（例如某小币种），那他理论上可以随意抬价。但此时监管机构（或交易所）会视其为 <strong>滥用市场支配地位（market abuse）</strong>。例如：</p>
+<ul>
+<li>虚假报价（Fake liquidity）</li>
+<li>利用自买自卖制造成交量</li>
+<li>刻意诱导价格波动赚取套利利润</li>
+</ul>
+<p>做市商的收益由三部分构成：</p>
+<table>
+<thead>
+<tr>
+<th>来源</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Spread 收益</strong></td>
+<td>买入价与卖出价之间的价差</td>
+</tr>
+<tr>
+<td><strong>交易所返佣（Rebate）</strong></td>
+<td>提供流动性，获得 Maker 费返</td>
+</tr>
+<tr>
+<td><strong>对冲套利收益（Hedge PnL）</strong></td>
+<td>对冲价差或延迟带来的额外利润</td>
+</tr>
+</tbody></table>
+<p>这已经属于操控市场。</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>做市（Market Making）</th>
+<th>操控市场（Market Manipulation）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>目的</strong></td>
+<td>提供流动性、稳定价格</td>
+<td>误导市场、牟取暴利</td>
+</tr>
+<tr>
+<td><strong>报价行为</strong></td>
+<td>基于供需、风险模型自动调整</td>
+<td>人为制造虚假价格或成交量</td>
+</tr>
+<tr>
+<td><strong>价格来源</strong></td>
+<td>真实订单簿与模型</td>
+<td>虚假挂单、诱骗成交（spoofing）</td>
+</tr>
+<tr>
+<td><strong>利润来源</strong></td>
+<td>Bid&#x2F;Ask 差价（Spread）</td>
+<td>利用误导行为的短期暴利</td>
+</tr>
+<tr>
+<td><strong>监管态度</strong></td>
+<td>鼓励、扶持</td>
+<td>明令禁止（如SEC、CFTC、FCA均有处罚案例）</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>纳斯达克市场：纳斯达克市场的做市商制度最著名和完善：要成为纳斯达克的做市商的证券商必须首先在全美证券商协会登记注册，规定每只证券至少要有两家做市商，而实际上目前平均每只证券有10余家的做市商，某些交易活跃的证券有40家以上的做市商。</p>
+</blockquote>
+<p>现在所有的做市商都是程序化做市，即依靠高频交易程序获取市场价格与盘口深度，然后决定做市策略，成交后如何自动对冲风险，等等。人工做市的时代早就结束了。</p>
+<p>┌──────────────────────────────────────┐<br>│          高频做市系统总体结构图       │<br>├──────────────────────────────────────┤<br>│ 1️⃣ 市场数据模块（Market Data）       │ ← 接受行情 (Ticker &#x2F; Orderbook)<br>│ 2️⃣ 策略引擎（Strategy Engine）        │ ← 计算Bid&#x2F;Ask报价<br>│ 3️⃣ 风险控制模块（Risk Controller）    │ ← 库存 &amp; 风险限额<br>│ 4️⃣ 对冲模块（Hedging Engine）         │ ← 在其他市场自动平仓<br>│ 5️⃣ 订单执行模块（Order Executor）     │ ← 高频挂单&#x2F;撤单<br>│ 6️⃣ 日志与监控模块（Metrics&#x2F;Logger）  │<br>└──────────────────────────────────────┘</p>
+<h1 id="演变历史"><a href="#演变历史" class="headerlink" title="演变历史"></a>演变历史</h1><table>
+<thead>
+<tr>
+<th>机制</th>
+<th>Uniswap（AMM）</th>
+<th>传统做市商</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>价格形成</td>
+<td>恒定乘积公式 x*y&#x3D;k</td>
+<td>报价模型（库存+波动+参考价）</td>
+</tr>
+<tr>
+<td>流动性提供者</td>
+<td>任意用户（LP）</td>
+<td>专业做市商机构</td>
+</tr>
+<tr>
+<td>价格同步方式</td>
+<td>外部套利者修正</td>
+<td>自身或外部套利者修正</td>
+</tr>
+<tr>
+<td>执行主体</td>
+<td>智能合约自动完成</td>
+<td>高频交易系统完成</td>
+</tr>
+<tr>
+<td>延迟敏感度</td>
+<td>区块确认级（几秒）</td>
+<td>纳秒级（HFT级别）</td>
+</tr>
+</tbody></table>
+<h2 id="UniswapV1源码分析"><a href="#UniswapV1源码分析" class="headerlink" title="UniswapV1源码分析"></a>UniswapV1源码分析</h2><blockquote>
+<p><a target="_blank" rel="noopener" href="https://iondex.github.io/2021/07/13/uniswap-v1-source-code/">DeFi发展史：Uniswap V1 源码阅读和分析 | Hexo</a></p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/406610359">(28 封私信 &#x2F; 84 条消息) 你知道最近流行的AMM（自动做市商）是啥不？ - 知乎</a></p>
+<h3 id="自动做市系统"><a href="#自动做市系统" class="headerlink" title="自动做市系统"></a>自动做市系统</h3><p>恒定乘积自动做市系统（constant-product automated market maker）</p>
+<p><a target="_blank" rel="noopener" href="https://learnblockchain.cn/article/8274">大白话带你推导UniswapV2公式及分析其代码 | 登链社区 | 区块链技术社区</a></p>
+<p>价格一致性由套利机制维持, Uniswap 的价格不是“定死的”，而是由套利者不断修正出来的。和传统交易所的 OrderBook 撮合机制不同，在自动做市机制中每个用户的交易对象都是交易所本身(在 Binance（中心化交易所）中，你的买单要<strong>匹配到卖单</strong>；而在 Uniswap 中，没有“订单”这一概念，用户直接与<strong>流动性池（Liquidity Pool）</strong>交易。)</p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/1932021328883458902">(28 封私信 &#x2F; 84 条消息) Uniswap 流动性机制及相关数学原理分析 - 知乎</a></p>
+<h2 id="UniswapV2源码分析"><a href="#UniswapV2源码分析" class="headerlink" title="UniswapV2源码分析"></a>UniswapV2源码分析</h2><blockquote>
+<p><a target="_blank" rel="noopener" href="https://learnblockchain.cn/article/7963">uniswap v2 代码解读 | 登链社区 | 区块链技术社区</a></p>
+<p><a target="_blank" rel="noopener" href="https://chuwt.github.io/post/uniswapv2%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">UniswapV2源码分析 - chuwt’s blog</a></p>
+</blockquote>
+<blockquote>
+<p><strong>从 “ETH 中心” 走向 “任意资产对等” 的自动做市系统。</strong></p>
+</blockquote>
+<p>核心是三点：</p>
+<ol>
+<li>支持任意 ERC20&#x2F;ERC20 配对</li>
+<li>引入闪电交换（Flash Swap）</li>
+<li>内置 TWAP 定价机制（防闪电贷操纵）</li>
+</ol>
+<h3 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h3><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/1932021328883458902">(28 封私信 &#x2F; 84 条消息) Uniswap 流动性机制及相关数学原理分析 - 知乎</a></p>
+<h2 id="UniswapV3源码分析"><a href="#UniswapV3源码分析" class="headerlink" title="UniswapV3源码分析"></a>UniswapV3源码分析</h2><blockquote>
+<p><a target="_blank" rel="noopener" href="https://learnblockchain.cn/article/2371">uniswap - V3源代码导读 | 登链社区 | 区块链技术社区</a></p>
+</blockquote>
+<p><strong>提高资本效率、增强流动性提供者（LP）的灵活性与收益控制权</strong>。</p>
+<p><a target="_blank" rel="noopener" href="https://learnblockchain.cn/article/6415">去中心化金融笔记（三）—— Uniswap V3 详解 | 登链社区 | 区块链技术社区</a></p>
+<p><a target="_blank" rel="noopener" href="https://learnblockchain.cn/article/6838">剖析DeFi交易产品之UniswapV3：概述篇 | 登链社区 | 区块链技术社区</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/394326111">(28 封私信 &#x2F; 84 条消息) 更灵活的做市——UniSwap V3 - 知乎</a></p>
+<p><a target="_blank" rel="noopener" href="https://paco0x.org/uniswap-v3-1/">Uniswap v3 详解（一）：设计原理 - Paco</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/394326111">(28 封私信 &#x2F; 84 条消息) 更灵活的做市——UniSwap V3 - 知乎</a></p>
+<h2 id="UniswapV4源码分析"><a href="#UniswapV4源码分析" class="headerlink" title="UniswapV4源码分析"></a>UniswapV4源码分析</h2><p><a target="_blank" rel="noopener" href="https://paco0x.org/uniswap-v4-new-features/">Uniswap V4 探析（一） —— 新特性解读 - Paco</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/1932021328883458902">(28 封私信 &#x2F; 84 条消息) Uniswap 流动性机制及相关数学原理分析 - 知乎</a></p>
+<p>UniswapV2Factory 的职责：</p>
+<ol>
+<li><strong>事件</strong>：记录每个新交易对的创建（PairCreated）。</li>
+<li><strong>查询</strong>：提供交易对信息（getPair, allPairs, allPairsLength）。</li>
+<li><strong>权限</strong>：管理手续费接收人（feeTo, feeToSetter）。</li>
+<li><strong>创建</strong>：任何人都能创建新交易对（createPair）。</li>
+</ol>
+<blockquote>
+<p>在 Uniswap 中，价格被定义为一种比率，即流动性池中一种资产的储备量与另一种资产的储备量之比。通常，我们更关注的资产会放在分母的位置。</p>
+</blockquote>
+<h1 id="借鉴意义"><a href="#借鉴意义" class="headerlink" title="借鉴意义"></a>借鉴意义</h1><hr>
+<p>参考：</p>
+<p><a target="_blank" rel="noopener" href="https://chuwt.github.io/post/uniswapv2%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/#uniswap-v2-%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB">UniswapV2源码分析 - chuwt’s blog</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/597251246">(99+ 封私信 &#x2F; 82 条消息) Uniswap V2 core源码解析 - 知乎</a></p>
+<p>[uniswap v2 代码解读 | 登链社区 | 区块链技术社区](<a target="_blank" rel="noopener" href="https://learnblockchain.cn/article/7963#1">https://learnblockchain.cn/article/7963#1</a>. UniswapV2Library)</p>
+<p><a target="_blank" rel="noopener" href="https://learnblockchain.cn/article/14610">Solana 链上 AMM 深度解析：Solana 构建者的 Raydium 见解 | 登链社区 | 区块链技术社区</a></p>
+<p><a target="_blank" rel="noopener" href="https://gteng.org/2024/12/26/dex-dev-0/">DEX 开发笔记 - Raydium 恒定乘积交换合约源码阅读 | 一口笔记</a></p>
+<p><a target="_blank" rel="noopener" href="https://learnblockchain.cn/article/8274">大白话带你推导UniswapV2公式及分析其代码 | 登链社区 | 区块链技术社区</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/johnchow/p/18053185">Uniswap V2源码解读 - 竹千代 - 博客园</a></p>
+<p><a target="_blank" rel="noopener" href="https://learnblockchain.cn/article/7963#%E6%8B%9B%E8%81%98%E5%8F%91%E5%B8%83%E6%8E%A5%E5%8F%A3">uniswap v2 代码解读 | 登链社区 | 区块链技术社区</a></p>
+<p><a target="_blank" rel="noopener" href="https://iondex.github.io/2021/07/13/uniswap-v1-source-code/">DeFi发展史：Uniswap V1 源码阅读和分析 | Hexo</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.reddit.com/r/investing/comments/8o9gnr/eli5_the_role_of_a_market_maker/?tl=zh-hans">用大白话解释：做市商的作用 : r&#x2F;investing</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.reddit.com/r/eupersonalfinance/comments/18uielk/eli5_how_bidask_is_set_after_each_trade/?tl=zh-hans">用通俗易懂的方式解释一下，每次交易后买入价&#x2F;卖出价是如何确定的 : r&#x2F;eupersonalfinance</a></p>
+<p><a target="_blank" rel="noopener" href="https://liaoxuefeng.com/blogs/all/2022-02-28-finance-maker/index.html">做市指南 - Blogs - 廖雪峰的官方网站</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/1949747464757293595">(28 封私信 &#x2F; 84 条消息) DeFi 协议与金融机制设计 - 知乎</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%85%A8%E6%A0%88%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/" class="category-chain-item">全栈应用开发</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%85%A8%E6%A0%88%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/Web3%E5%BA%94%E7%94%A8/" class="category-chain-item">Web3应用</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%85%A8%E6%A0%88%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/Web3%E5%BA%94%E7%94%A8/%E5%AE%89%E5%85%A8%E5%AE%A1%E8%AE%A1/" class="category-chain-item">安全审计</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%85%A8%E6%A0%88%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/Web3%E5%BA%94%E7%94%A8/%E5%AE%89%E5%85%A8%E5%AE%A1%E8%AE%A1/DeFi%E6%BA%90%E7%A0%81/" class="category-chain-item">DeFi源码</a>
+  
+  
+
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Uniswap系列源码分析</div>
+      <div>http://example.com/2025/10/01/全栈应用开发/Web3应用/安全审计/DeFi源码/Uniswap系列源码分析/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Ling</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年10月1日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/10/01/%E5%85%A8%E6%A0%88%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/Web3%E5%BA%94%E7%94%A8/%E5%AE%89%E5%85%A8%E5%AE%A1%E8%AE%A1/DeFi%E6%BA%90%E7%A0%81/Aave%E7%B3%BB%E5%88%97%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" title="Aave系列源码分析">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Aave系列源码分析</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/09/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6%E4%B8%8E%E6%8A%80%E6%9C%AF/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/P2P%E7%BD%91%E7%BB%9C/P2P%E7%BD%91%E7%BB%9C%E6%9E%84%E5%BB%BA/" title="P2P网络构建">
+                        <span class="hidden-mobile">P2P网络构建</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

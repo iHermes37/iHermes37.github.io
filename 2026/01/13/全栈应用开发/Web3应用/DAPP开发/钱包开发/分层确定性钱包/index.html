@@ -1,0 +1,797 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Ling">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="背景知识地址是由私钥推导公钥，再经过特定算法计算得到的。不同区块链使用的椭圆曲线算法不同，例如：  比特币和以太坊采用 secp256k1 Solana 采用 Ed25519  由于推导过程是确定性的，本质上一个地址就是由私钥决定的。一个安全的私钥应当满足 随机、不可预测、不可重复。 如果每次都生成完全独立的随机私钥，备份、迁移和容灾的成本会非常高。因此，一般而言，市面上的大多数钱包系统都会采用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分层确定性钱包">
+<meta property="og:url" content="http://example.com/2026/01/13/%E5%85%A8%E6%A0%88%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/Web3%E5%BA%94%E7%94%A8/DAPP%E5%BC%80%E5%8F%91/%E9%92%B1%E5%8C%85%E5%BC%80%E5%8F%91/%E5%88%86%E5%B1%82%E7%A1%AE%E5%AE%9A%E6%80%A7%E9%92%B1%E5%8C%85/index.html">
+<meta property="og:site_name" content="The Peak Tower">
+<meta property="og:description" content="背景知识地址是由私钥推导公钥，再经过特定算法计算得到的。不同区块链使用的椭圆曲线算法不同，例如：  比特币和以太坊采用 secp256k1 Solana 采用 Ed25519  由于推导过程是确定性的，本质上一个地址就是由私钥决定的。一个安全的私钥应当满足 随机、不可预测、不可重复。 如果每次都生成完全独立的随机私钥，备份、迁移和容灾的成本会非常高。因此，一般而言，市面上的大多数钱包系统都会采用">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2026/01/13/VMOil6SdX1UjaqZ.webp">
+<meta property="article:published_time" content="2026-01-13T12:28:24.248Z">
+<meta property="article:modified_time" content="2026-03-04T02:54:18.530Z">
+<meta property="article:author" content="Ling">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2026/01/13/VMOil6SdX1UjaqZ.webp">
+  
+  
+  
+  <title>分层确定性钱包 - The Peak Tower</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":"ture","follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"7a4M5yfyGptX0OG18qvJppXQ-gzGzoHsz","app_key":"y6dZFtA8I8Lg1KVhHbujblfB","server_url":"https://7a4m5yfy.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="分层确定性钱包"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          12 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">分层确定性钱包</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="背景知识"><a href="#背景知识" class="headerlink" title="背景知识"></a>背景知识</h1><p>地址是由私钥推导公钥，再经过特定算法计算得到的。不同区块链使用的椭圆曲线算法不同，例如：</p>
+<ul>
+<li>比特币和以太坊采用 <strong>secp256k1</strong></li>
+<li>Solana 采用 <strong>Ed25519</strong></li>
+</ul>
+<p>由于推导过程是确定性的，本质上一个地址就是由私钥决定的。一个安全的私钥应当满足 <strong>随机、不可预测、不可重复</strong>。</p>
+<p>如果每次都生成完全独立的随机私钥，备份、迁移和容灾的成本会非常高。因此，一般而言，市面上的大多数钱包系统都会采用 <strong>分层确定性（Hierarchical Deterministic, HD）钱包方案</strong>，它涉及几个 BIP（Bitcoin Improvement Proposal）：</p>
+<ul>
+<li><strong>BIP39</strong>：使用助记词生成一个<strong>种子（seed）</strong></li>
+<li><strong>BIP32</strong>：基于种子派生主私钥、公钥，并可沿路径无限派生子密钥</li>
+<li><strong>BIP44</strong>：定义了 5 层树状层级结构，标准化不同币种的钱包路径，例如以太坊钱包的标准派生路径是 <code>m/44&#39;/60&#39;/0&#39;/0/n</code></li>
+</ul>
+<p>通过一个助记词和密码，可以推导出种子，并基于不同路径生成无限多个地址。只需安全离线保存助记词和密码，即可保障安全性和可恢复性。</p>
+<h1 id="BIP标准"><a href="#BIP标准" class="headerlink" title="BIP标准"></a>BIP标准</h1><p>既然前面提到了<strong>分层确定性钱包方案</strong>中是需要实现几个BIP标准的，可以把 HD 钱包理解为：</p>
+<p><strong>BIP39 负责“造种子” → BIP32 负责“长树” → BIP44 负责“规定长成什么样的树”</strong></p>
+<p>对应关系：</p>
+<table>
+<thead>
+<tr>
+<th>BIP</th>
+<th>解决什么问题</th>
+<th>一句话理解</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>BIP39</td>
+<td>人怎么备份</td>
+<td>把随机数变成助记词</td>
+</tr>
+<tr>
+<td>BIP32</td>
+<td>机器怎么派生</td>
+<td>从一个种子无限派生密钥</td>
+</tr>
+<tr>
+<td>BIP44</td>
+<td>不同币怎么统一路径</td>
+<td>规定层级结构和路径格式</td>
+</tr>
+</tbody></table>
+<p>用户记住的是 BIP39 助记词，钱包内部用 seed 按 BIP32 算出密钥树，再按 BIP44 的路径规则去取某一类币的地址。</p>
+<p>这里先对这几个主要的BIP做简单的介绍。</p>
+<blockquote>
+<p>小明打开MetaMask，点击“创建钱包”。</p>
+</blockquote>
+<h2 id="BIP-39"><a href="#BIP-39" class="headerlink" title="BIP-39"></a>BIP-39</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-comment">// BIP-39为小明生成12个助记词</span><br><span class="hljs-keyword">const</span> mnemonic = <span class="hljs-string">&quot;apple boat cat dog elephant fox grape horse ice juice king lemon&quot;</span>;<br><span class="hljs-comment">// 这12个单词就是BIP-39的产物</span><br></code></pre></td></tr></table></figure>
+
+<p>人类很难记住 <code>0x3f6a5d8c1b9e...</code> 这样的随机数，而BIP-39将128位随机熵变成<strong>人类可读、可手抄、可记忆的单词</strong>，即使手机丢失，小明凭这12个单词可在任何设备恢复钱包。当小明确认备份好助记词后，同时BIP-39将助记词转化为512位的种子。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> seed = bip39.<span class="hljs-title function_">mnemonicToSeed</span>(mnemonic);<br><span class="hljs-comment">// 结果：64字节的种子，如：0x4f5a3b...（512位）</span><br></code></pre></td></tr></table></figure>
+
+<p>这里的种子有什么用处？</p>
+<p>答：这是<strong>整个HD钱包体系的唯一根源</strong>，所有密钥都从这个种子派生出来，种子永远不离开小明的设备，只存储在本地。</p>
+<h2 id="BIP-32"><a href="#BIP-32" class="headerlink" title="BIP-32"></a>BIP-32</h2><p>有了种子后，钱包开始构建密钥树：BIP-32从种子生成主扩展私钥</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">// masterKey包含：</span><br><span class="hljs-comment">// - 私钥：可签名交易</span><br><span class="hljs-comment">// - 链码：确保派生确定性</span><br><span class="hljs-comment">// - 可派生子密钥的能力</span><br><span class="hljs-keyword">const</span> masterKey = bip32.<span class="hljs-title function_">fromSeed</span>(seed);<br></code></pre></td></tr></table></figure>
+
+<p>其中：<strong>种子</strong>是 一棵树的DNA而<strong>BIP-32</strong> 就是让DNA长成大树主干的过程</p>
+<p><img src="https://s2.loli.net/2026/01/13/VMOil6SdX1UjaqZ.webp" srcset="/img/loading.gif" lazyload></p>
+<p>每个节点都有：private key，public key，chain code。派生公式本质是：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">HMAC-SHA512</span><span class="hljs-params">(chain_code, parent_key + index)</span></span><br></code></pre></td></tr></table></figure>
+
+<p><strong>这一步解决：确定性层级派生问题</strong>，同一个 seed 永远能算出同一棵树。</p>
+<h2 id="BIP-44"><a href="#BIP-44" class="headerlink" title="BIP-44"></a>BIP-44</h2><p>如果只用 BIP32，各钱包路径可以乱写，会导致：</p>
+<ul>
+<li>不同钱包找不到彼此的地址</li>
+<li>一个钱包升级就“丢币”</li>
+</ul>
+<p>必须决定密钥如何组织。所以 BIP44 规定标准结构：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs txt">m / 44&#x27; / 60&#x27; / 0&#x27; / 0 / 0<br>│   │     │     │   │   │<br>│   │     │     │   │   └── 地址索引（第n个地址）<br>│   │     │     │   └────── 0=外部地址，1=找零地址<br>│   │     │     └────────── 账户索引（第0个账户）<br>│   │     └──────────────── 币种类型（60=以太坊）<br>│   └────────────────────── 用途（44=多币种HD钱包）<br>└────────────────────────── 主私钥<br></code></pre></td></tr></table></figure>
+
+<p>以太坊标准路径：<code>m / 44&#39; / 60&#39; / 0&#39; / 0 / n</code></p>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>44’</td>
+<td>BIP44 协议标识</td>
+</tr>
+<tr>
+<td>60’</td>
+<td>以太坊 coin type</td>
+</tr>
+<tr>
+<td>0’</td>
+<td>第 0 个账户</td>
+</tr>
+<tr>
+<td>0</td>
+<td>外部收款地址</td>
+</tr>
+<tr>
+<td>n</td>
+<td>第 n 个地址</td>
+</tr>
+</tbody></table>
+<p>于是钱包就会生成：</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli">m/44&#x27;<span class="hljs-string">/60</span>&#x27;<span class="hljs-string">/0</span>&#x27;<span class="hljs-string">/0/0</span>  → 地址1<br>m/44&#x27;<span class="hljs-string">/60</span>&#x27;<span class="hljs-string">/0</span>&#x27;<span class="hljs-string">/0/1</span>  → 地址2<br>m/44&#x27;<span class="hljs-string">/60</span>&#x27;<span class="hljs-string">/0</span>&#x27;<span class="hljs-string">/0/2</span>  → 地址3<br><span class="hljs-string">...</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>这一步解决：跨钱包兼容与多币种统一管理问题</strong></p>
+<h1 id="HD钱包系统"><a href="#HD钱包系统" class="headerlink" title="HD钱包系统"></a>HD钱包系统</h1><p><strong>HD 钱包</strong>是一种基于确定性密钥派生机制的钱包结构，其核心思想是：<strong>通过一个高熵主种子（Seed）即可在数学上确定性地生成整棵密钥树，从而派生出无限数量的私钥与地址，实现“一个备份恢复全部资产”的安全与可管理性目标。</strong></p>
+<p>HD 钱包通常遵循 BIP32 标准，使用 HMAC-SHA512 作为密钥派生函数（CKD, Child Key Derivation），从主私钥和链码（Chain Code）递归派生子密钥，形成树状层级结构；在此基础上，BIP44 &#x2F; BIP49 &#x2F; BIP84 等路径规范进一步定义了多币种、多账户、外部&#x2F;内部地址分区等语义层级，<strong>使钱包在支持多链资产管理的同时保持良好的地址隔离性和隐私性</strong>。</p>
+<p>HD 钱包支持从扩展公钥（xpub）派生所有接收地址而无需暴露私钥，因此非常适合冷钱包、硬件钱包与商户收款系统等场景；同时通过助记词（BIP39）将随机种子编码为可人工抄写的单词序列，<strong>解决了传统私钥难以备份的问题</strong>。</p>
+<h2 id="密钥管理模块"><a href="#密钥管理模块" class="headerlink" title="密钥管理模块"></a>密钥管理模块</h2><h2 id="交易签名模块"><a href="#交易签名模块" class="headerlink" title="交易签名模块"></a>交易签名模块</h2><h2 id="交易构建与传输模块"><a href="#交易构建与传输模块" class="headerlink" title="交易构建与传输模块"></a>交易构建与传输模块</h2><h2 id="链交互与数据同步模块"><a href="#链交互与数据同步模块" class="headerlink" title="链交互与数据同步模块"></a>链交互与数据同步模块</h2>
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%85%A8%E6%A0%88%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/" class="category-chain-item">全栈应用开发</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%85%A8%E6%A0%88%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/Web3%E5%BA%94%E7%94%A8/" class="category-chain-item">Web3应用</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%85%A8%E6%A0%88%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/Web3%E5%BA%94%E7%94%A8/DAPP%E5%BC%80%E5%8F%91/" class="category-chain-item">DAPP开发</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%85%A8%E6%A0%88%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/Web3%E5%BA%94%E7%94%A8/DAPP%E5%BC%80%E5%8F%91/%E9%92%B1%E5%8C%85%E5%BC%80%E5%8F%91/" class="category-chain-item">钱包开发</a>
+  
+  
+
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>分层确定性钱包</div>
+      <div>http://example.com/2026/01/13/全栈应用开发/Web3应用/DAPP开发/钱包开发/分层确定性钱包/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Ling</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年1月13日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2026/01/13/%E5%85%A8%E6%A0%88%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/Web3%E5%BA%94%E7%94%A8/DAPP%E5%BC%80%E5%8F%91/%E9%92%B1%E5%8C%85%E5%BC%80%E5%8F%91/%E5%A4%9A%E6%96%B9%E8%AE%A1%E7%AE%97%E9%92%B1%E5%8C%85/" title="多方计算钱包">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">多方计算钱包</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2026/01/12/%E5%85%A8%E6%A0%88%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/Agent%E5%BA%94%E7%94%A8/Agent%E5%BC%80%E5%8F%91/%E6%80%9D%E8%80%83%E8%A7%84%E5%88%92%E7%B3%BB%E7%BB%9F/" title="思考规划系统">
+                        <span class="hidden-mobile">思考规划系统</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
